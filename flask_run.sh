@@ -1,3 +1,6 @@
 #!/bin/sh
 
-flask run
+# flask run
+cd src/
+../venv/bin/python app.py
+
