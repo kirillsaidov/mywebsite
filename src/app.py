@@ -26,7 +26,7 @@ def app_shutdown():
 if __name__ == "__main__":
     try:
         app_startup()
-        app.run(debug=True)
+        app.run(debug=True, host='192.168.112.59', port=5000)
     except:
         traceback.print_exc()
     finally:

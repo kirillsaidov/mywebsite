@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Welcome to StudyVerse {% endblock %}</h1>
-    <p>hello, world</p>
+    <div class="container container_body">
+
+        <div class="container index_content">
+            <ul class="list-unstyled">
+                <li class="text_one_liner">
+                    <p style="color: grey;font-style: normal;">/</p>
+                    <a href="{{url_for('blog')}}" class="index_link">Blog</a>
+                </li>
+                <li class="text_one_liner">
+                    <p style="color: grey;font-style: normal;">/</p>
+                    <a href="{{url_for('about')}}" class="index_link">About</a>
+                </li>
+                <li class="text_one_liner">
+                    <p style="color: grey;font-style: normal;">/</p>
+                    <a href="{{url_for('projects')}}" class="index_link">Projects</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
 {% endblock %}
