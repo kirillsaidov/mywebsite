@@ -1,11 +1,14 @@
 module routes.home;
 
+import std.array : array;
+import std.algorithm.iteration : map;
+
 import vibe.vibe;
 import config;
 
 struct AboutInfo {
     string name;
-    string bio;
+    string[] bio;
     string email_user;
     string email_domain;
     string linkedin;
@@ -21,7 +24,7 @@ void getHomePage(HTTPServerRequest req, HTTPServerResponse res)
         auto data = getConfig()["about"];
         about = AboutInfo(
             name: data["name"].str,
-            bio: data["bio"].str,
+            bio: data["bio"].array.map!(item => item.str).array,
             email_user: data["social"]["email-user"].str,
             email_domain: data["social"]["email-domain"].str,
             linkedin: data["social"]["linkedin"].str,
