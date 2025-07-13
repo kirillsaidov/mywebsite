@@ -1,0 +1,8 @@
+name "mywebsite"
+description "My portfolio and blog website."
+authors "Kirill Saidov"
+copyright "Copyright © 2025, Kirill Saidov"
+license "MIT"
+dependency "vibe-d" version="~>0.10.2"
+targetType "executable"
+targetPath "bin"
