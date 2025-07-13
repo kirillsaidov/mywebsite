@@ -1,0 +1,57 @@
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        title KS's Blog
+
+        //- bootstrap
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr", crossorigin="anonymous")
+        link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css", rel="stylesheet")
+        
+        //- css styles
+        include base/styles.dt
+    body 
+        //- navigation bar
+        nav(class="navbar navbar-expand-lg fixed-top")
+            div(class="container")
+                //- navigation brand icon
+                a(class="navbar-brand", href="/")
+                    | Kirill Saidov
+                
+                //- right side buttons container
+                div(class="d-flex align-items-center")
+                    //- navbar toggler
+                    button(class="navbar-toggler", type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav")
+                        span(class="navbar-toggler-icon")
+                    
+                    //- theme toggle
+                    div.container
+                        button(class="theme-toggle btn me-2", onclick="toggleTheme()")
+                            i.fas.fa-sun(id="theme-icon")
+
+                //- navigation items
+                div(class="collapse navbar-collapse", id="navbarNav")
+                    ul.navbar-nav.ms-auto
+                        li.nav-item
+                            a.nav-link(href="#home") Home
+                        li.nav-item
+                            a.nav-link(href="/blog") Blog
+                        li.nav-item
+                            a.nav-link(href="/cv") CV
+        
+        //- MAIN CONTENT BLOCK
+        block content
+
+        //- footer
+        footer.bg-dark.text-white.py-4
+            .container
+                .row
+                    .col-md-6
+                        p &copy; 2025 Kirill Saidov. All rights reserved.
+
+        //- bootstrap
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js", integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q", crossorigin="anonymous")
+    
+    //- javascript functions
+    include base/js.dt

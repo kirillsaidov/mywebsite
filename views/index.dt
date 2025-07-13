@@ -1,0 +1,42 @@
+extends base/layout
+
+block content
+    //- hero section
+    section.hero-section#home
+        .container
+            .row.align-items-center
+                .col-lg-6
+                    .profile-card.text-center.text-lg-start
+                        .row.align-items-center
+                            .col-lg-4.mb-4.mb-lg-0
+                                img.profile-image.mx-auto.d-block(src="https://media.licdn.com/dms/image/v2/D4D03AQFBr6WW1hROrQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1720340476458?e=1758153600&v=beta&t=KNeu12Hgs0d7W6dbqTvJoFBgwGWx_eCd5_gwL3tHlKI", alt="Profile Photo")
+                            .col-lg-8
+                                .container
+                                    h1.text-white.mb-3.animated-text
+                                        | Hello, I'm 
+                                        span.text-gradient #{about.name}
+                                    p.text-white.mb-4.animated-text
+                                        | #{about.bio}
+                                    .d-flex.flex-column.flex-sm-row.gap-3.justify-content-center.justify-content-lg-start
+                                        a.btn-gradient(href="/cv")
+                                            i.fas.fa-eye.me-2
+                                            | View CV
+                                        a.btn-gradient(href="/blog")
+                                            i.fas.fa-blog.me-2
+                                            | Read Blog
+                .col-lg-6
+                    .social-links.text-center.mt-5.mt-lg-0
+                        h3.text-white.mb-4 Connect with me
+                        a(href="#{about.linkedin}", target="_blank", title="LinkedIn")
+                            i.fab.fa-linkedin-in
+                        a(href="#{about.github}", target="_blank", title="GitHub")
+                            i.fab.fa-github
+                        a(href="#", title="Email", id="email-link")
+                            i.fas.fa-envelope
+                        script.
+                            document.getElementById('email-link').addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const user = '#{about.email_user}';
+                                const domain = '#{about.email_domain}';
+                                window.location.href = 'mailto:' + user + '@' + domain;
+                            });    
