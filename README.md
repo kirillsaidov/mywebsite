@@ -1,6 +1,6 @@
 # My website
-This repo contains code of my personal website. It is written with Python/Flask.  
+This repo contains code of my personal website. It is written in `D` programming language + `Vibe.d` framework.
 
 ### LICENSE
-All code is licensed under the MIT license.
+MIT.
 
