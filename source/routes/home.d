@@ -1,8 +1,7 @@
 module routes.home;
 
-import std.json;
-import std.file;
 import vibe.vibe;
+import config;
 
 struct AboutInfo {
     string name;
@@ -15,21 +14,18 @@ struct AboutInfo {
 
 void getHomePage(HTTPServerRequest req, HTTPServerResponse res)
 {
-    // load config
-    auto configText = readText("config/config.json");
-    auto config = parseJSON(configText);
-
     // init
     AboutInfo about;
     try 
     {
+        auto data = getConfig()["about"];
         about = AboutInfo(
-            name: config["about"]["name"].str,
-            bio: config["about"]["bio"].str,
-            email_user: config["about"]["social"]["email-user"].str,
-            email_domain: config["about"]["social"]["email-domain"].str,
-            linkedin: config["about"]["social"]["linkedin"].str,
-            github: config["about"]["social"]["github"].str,
+            name: data["name"].str,
+            bio: data["bio"].str,
+            email_user: data["social"]["email-user"].str,
+            email_domain: data["social"]["email-domain"].str,
+            linkedin: data["social"]["linkedin"].str,
+            github: data["social"]["github"].str,
         );
     } 
     catch (Exception e) about = AboutInfo();
