@@ -6,18 +6,17 @@ import std.algorithm.iteration : map;
 import vibe.vibe;
 import config;
 
-struct AboutInfo {
-    string name;
-    string[] bio;
-    string email_user;
-    string email_domain;
-    string linkedin;
-    string github;
-}
-
 void getHomePage(HTTPServerRequest req, HTTPServerResponse res)
 {
-    // init
+    struct AboutInfo {
+        string name;
+        string[] bio;
+        string email_user;
+        string email_domain;
+        string linkedin;
+        string github;
+    }
+    
     AboutInfo about;
     try 
     {
