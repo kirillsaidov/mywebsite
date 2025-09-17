@@ -30,7 +30,9 @@ block content
                         h3.text-white.mb-4 Connect with me
                         a(href="#{about.linkedin}", target="_blank", title="LinkedIn")
                             i.fab.fa-linkedin-in
-                        a(href="#{about.github}", target="_blank", title="GitHub")
+                        a(href="#{about.github_ks}", target="_blank", title="GitHub")
+                            i.fab.fa-github
+                        a(href="#{about.github_rk}", target="_blank", title="GitHub")
                             i.fab.fa-github
                         a(href="#", title="Email", id="email-link")
                             i.fas.fa-envelope

@@ -4,7 +4,7 @@ import std.stdio;
 import vibe.vibe;
 
 // routes
-import routes.home;
+import routes;
 
 
 void main()
@@ -16,9 +16,9 @@ void main()
 
     // configure routing
     auto router = new URLRouter;
-    router.get("/", &getHomePage);
-    router.get("/blog", &getHomePage);
-    router.get("/cv", &getHomePage);
+    router.get("/", &routes.getHomePage);
+    router.get("/blog", &routes.getHomePage);
+    router.get("/cv", &routes.getCV);
     router.get("*", serveStaticFiles("public/"));
 
     // init listener

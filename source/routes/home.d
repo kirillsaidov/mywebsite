@@ -14,7 +14,7 @@ void getHomePage(HTTPServerRequest req, HTTPServerResponse res)
         string email_user;
         string email_domain;
         string linkedin;
-        string github;
+        string github_ks, github_rk;
     }
     
     AboutInfo about;
@@ -27,7 +27,8 @@ void getHomePage(HTTPServerRequest req, HTTPServerResponse res)
             email_user: data["social"]["email-user"].str,
             email_domain: data["social"]["email-domain"].str,
             linkedin: data["social"]["linkedin"].str,
-            github: data["social"]["github"].str,
+            github_ks: data["social"]["github_ks"].str,
+            github_rk: data["social"]["github_rk"].str,
         );
     } 
     catch (Exception e) about = AboutInfo();
