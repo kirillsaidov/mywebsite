@@ -6,14 +6,14 @@
 
     :root {
         --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-secondary: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
         --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     }
 
     [data-bs-theme="dark"] {
-        --gradient-primary: linear-gradient(135deg, #2d1b69 0%, #11998e 100%);
-        --gradient-secondary: linear-gradient(135deg, #833ab4 0%, #fd1d1d 100%);
-        --gradient-accent: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        --gradient-primary: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-accent: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
     }
 
     body {
