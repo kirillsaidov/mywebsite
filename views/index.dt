@@ -36,10 +36,12 @@ block content
                             i.fab.fa-github
                         a(href="#", title="Email", id="email-link")
                             i.fas.fa-envelope
-                        script.
-                            document.getElementById('email-link').addEventListener('click', function(e) {
-                                e.preventDefault();
-                                const user = '#{about.email_user}';
-                                const domain = '#{about.email_domain}';
-                                window.location.href = 'mailto:' + user + '@' + domain;
-                            });    
+    
+    script.
+        // email
+        document.getElementById('email-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            const user = '#{about.email_user}';
+            const domain = '#{about.email_domain}';
+            window.location.href = 'mailto:' + user + '@' + domain;
+        });

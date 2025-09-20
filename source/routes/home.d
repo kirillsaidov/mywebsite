@@ -17,21 +17,16 @@ void getHomePage(HTTPServerRequest req, HTTPServerResponse res)
         string github_ks, github_rk;
     }
     
-    AboutInfo about;
-    try 
-    {
-        auto data = getConfig()["about"];
-        about = AboutInfo(
-            name: data["name"].str,
-            bio: data["bio"].array.map!(item => item.str).array,
-            email_user: data["social"]["email-user"].str,
-            email_domain: data["social"]["email-domain"].str,
-            linkedin: data["social"]["linkedin"].str,
-            github_ks: data["social"]["github_ks"].str,
-            github_rk: data["social"]["github_rk"].str,
-        );
-    } 
-    catch (Exception e) about = AboutInfo();
+    auto data = getConfig()["about"];
+    immutable about = AboutInfo(
+        name: data["name"].str,
+        bio: data["bio"].array.map!(item => item.str).array.dup,
+        email_user: data["social"]["email-user"].str,
+        email_domain: data["social"]["email-domain"].str,
+        linkedin: data["social"]["linkedin"].str,
+        github_ks: data["social"]["github_ks"].str,
+        github_rk: data["social"]["github_rk"].str,
+    );
 
     res.render!("index.dt", about);
 }

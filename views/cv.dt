@@ -1,4 +1,473 @@
 extends base/layout
 
 block content
+    //- hero banner
+    section.hero-banner#home
+        .container
+            .row.align-items-center
+                .col-lg-8
+                    h1.text-white.mb-3 CV
+                    p.text-white.mb-4
+                        | Preferred means of communication is email: 
+                        a(href="#", title="Email", id="email-link") 
+                            i.fas.fa-envelope.me-2
+                .col-lg-4
+                    button.btn-gradient(onclick="downloadPDF()")
+                        i.fas.fa-download.me-2
+                        | Download PDF
 
+    //- cv content
+    section.py-5
+        .container
+            .row
+                .col-12
+                    .cv-container#cvContent
+                        //- cv content will be loaded here dynamically
+                        
+    //- add required libraries for markdown parsing and PDF generation
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js")
+    
+    script.
+        // email
+        document.getElementById('email-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            const user = '#{email_user}';
+            const domain = '#{email_domain}';
+            window.location.href = 'mailto:' + user + '@' + domain;
+        });
+
+        function getCVMarkdown() {
+            // TODO: query API
+            // This function will be replaced with actual API call later
+            // For now, returning hardcoded example data
+            return `# AUTO-GENERATED TEMPLATE
+
+        **Email:** your.email@example.com | **Phone:** +1-234-567-8900  
+        **LinkedIn:** linkedin.com/in/yourprofile | **GitHub:** github.com/yourusername  
+        **Location:** Your City, Country
+        
+        ---
+        
+        ## Professional Summary
+        
+        Experienced software developer with expertise in systems programming, web development, and modern programming languages. Passionate about creating efficient, scalable solutions and exploring new technologies. Strong background in D programming language and web frameworks.
+        
+        ---
+        
+        ## Technical Skills
+        
+        **Programming Languages:** D, C++, JavaScript, Python, Go  
+        **Web Technologies:** HTML5, CSS3, Vibe.d, Node.js, React  
+        **Databases:** PostgreSQL, MySQL, MongoDB  
+        **Tools & Technologies:** Git, Docker, Linux, nginx  
+        **Concepts:** Systems Programming, Web Development, API Design, Database Design
+        
+        ---
+        
+        ## Professional Experience
+        
+        ### Senior Software Developer
+        **Tech Company Inc.** | *Jan 2022 - Present*
+        
+        - Led development of high-performance web applications using D and Vibe.d framework
+        - Implemented RESTful APIs serving over 10,000 daily active users
+        - Optimized database queries resulting in 40% improvement in response times
+        - Mentored junior developers and conducted code reviews
+        - Collaborated with cross-functional teams using Agile methodologies
+        
+        ### Software Developer
+        **Innovation Solutions LLC** | *Jun 2020 - Dec 2021*
+        
+        - Developed and maintained web applications using modern JavaScript frameworks
+        - Created automated testing suites improving code coverage by 60%
+        - Participated in system architecture decisions and technical documentation
+        - Implemented CI/CD pipelines reducing deployment time by 50%
+        
+        ### Junior Developer
+        **StartupTech Co.** | *Sep 2019 - May 2020*
+        
+        - Built responsive web interfaces using HTML, CSS, and JavaScript
+        - Assisted in backend development and database management
+        - Participated in daily standups and sprint planning meetings
+        - Learned industry best practices and modern development workflows
+        
+        ---
+        
+        ## Education
+        
+        ### Bachelor of Science in Computer Science
+        **University Name** | *2015 - 2019*
+        
+        - **GPA:** 3.8/4.0
+        - **Relevant Coursework:** Data Structures, Algorithms, Database Systems, Web Development
+        - **Senior Project:** Developed a distributed task management system using microservices architecture
+        
+        ---
+        
+        ## Projects
+        
+        ### Personal Blog Platform
+        *D, Vibe.d, PostgreSQL* | [GitHub Link]
+        
+        - Built a full-stack blog platform with user authentication and content management
+        - Implemented markdown support and syntax highlighting for code blocks
+        - Deployed using Docker containers with nginx reverse proxy
+        
+        ### Game Development Framework
+        *D, OpenGL* | [GitHub Link]
+        
+        - Created a 2D game engine with sprite handling and collision detection
+        - Implemented component-based entity system for flexible game object management
+        - Used in multiple small game projects and demos
+        
+        ---
+        
+        ## Certifications & Awards
+        
+        - **AWS Certified Solutions Architect** (2023)
+        - **Employee of the Month** - Tech Company Inc. (March 2023)
+        - **Best Senior Project** - University Name (2019)
+        
+        ---
+        
+        ## Languages
+        
+        - **English:** Native/Fluent
+        - **Spanish:** Intermediate
+        - **German:** Basic
+        
+        ---
+        
+        ## Interests
+        
+        - Open source contributions
+        - Technical writing and blogging
+        - Game development
+        - Mountain hiking and photography`;
+        }
+        
+        // convert markdown to html
+        function convertMarkdownToHTML(markdown) {
+            const html = marked.parse(markdown);
+            return `
+                <div class="cv-content">
+                    ${html}
+                </div>
+            `;
+        }
+        
+        // load and display cv content
+        function loadCV() {
+            const markdown = getCVMarkdown();
+            const html = convertMarkdownToHTML(markdown);
+            document.getElementById('cvContent').innerHTML = html;
+        }
+        
+        // download cv as pdf
+        function downloadPDF() {
+            const element = document.getElementById('cvContent');
+            
+            // temporarily apply pdf-specific styles
+            const tempStyle = document.createElement('style');
+            tempStyle.innerHTML = `
+                .cv-content {
+                    font-family: 'Times New Roman', Times, serif !important;
+                    color: #000000 !important;
+                    font-size: 11pt !important;
+                    line-height: 1.4 !important;
+                }
+                .cv-content h1 {
+                    color: #000000 !important;
+                    font-size: 16pt !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                .cv-content h2 {
+                    color: #000000 !important;
+                    font-size: 13pt !important;
+                    border-bottom: 1px solid #000000 !important;
+                    margin-top: 1rem !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                .cv-content h3 {
+                    color: #000000 !important;
+                    font-size: 11pt !important;
+                    margin-top: 0.8rem !important;
+                    margin-bottom: 0.3rem !important;
+                }
+                .cv-content p, .cv-content li, .cv-content strong, .cv-content em {
+                    color: #000000 !important;
+                }
+                .cv-content p {
+                    margin-bottom: 0.4rem !important;
+                }
+                .cv-content li {
+                    margin-bottom: 0.2rem !important;
+                }
+                .cv-content ul {
+                    margin-left: 1rem !important;
+                    margin-bottom: 0.6rem !important;
+                }
+                .cv-content hr {
+                    background-color: #000000 !important;
+                    background: #000000 !important;
+                    margin: 0.8rem 0 !important;
+                }
+                .cv-content a {
+                    color: #0066cc !important;
+                }
+            `;
+            document.head.appendChild(tempStyle);
+            
+            const opt = {
+                margin: [0.4, 0.4, 0.4, 0.4], // smaller margins: top, right, bottom, left (in inches)
+                filename: 'Kirill_Saidov_CV.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                // remove temporary styles after pdf generation
+                document.head.removeChild(tempStyle);
+            });
+        }
+        
+        // load cv when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCV();
+        });
+    
+    style.
+        .cv-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 3rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        [data-bs-theme="dark"] .cv-container {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+        
+        .cv-content {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        [data-bs-theme="dark"] .cv-content {
+            color: #ecf0f1;
+        }
+        
+        .cv-content h1 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 2.8rem;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+        
+        [data-bs-theme="dark"] .cv-content h1 {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .cv-content h2 {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1.2rem;
+            font-size: 1.9rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .cv-content h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-accent);
+            border-radius: 2px;
+        }
+        
+        [data-bs-theme="dark"] .cv-content h2 {
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .cv-content h3 {
+            color: #34495e;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .cv-content h3:before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        [data-bs-theme="dark"] .cv-content h3 {
+            color: #bdc3c7;
+        }
+        
+        .cv-content p {
+            margin-bottom: 1.2rem;
+            text-align: left;
+            font-weight: 400;
+        }
+        
+        .cv-content ul {
+            margin-left: 0;
+            margin-bottom: 1.5rem;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .cv-content li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.8rem;
+            position: relative;
+            font-weight: 400;
+        }
+        
+        .cv-content li:before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.7rem;
+            width: 6px;
+            height: 6px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+        }
+        
+        .cv-content strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        [data-bs-theme="dark"] .cv-content strong {
+            color: #ecf0f1;
+        }
+        
+        .cv-content em {
+            color: #7f8c8d;
+            font-style: italic;
+            font-weight: 500;
+        }
+        
+        [data-bs-theme="dark"] .cv-content em {
+            color: #95a5a6;
+        }
+        
+        .cv-content hr {
+            border: none;
+            height: 3px;
+            background: var(--gradient-accent);
+            margin: 2.5rem 0;
+            border-radius: 2px;
+            opacity: 0.7;
+        }
+        
+        [data-bs-theme="dark"] .cv-content hr {
+            background: var(--gradient-accent);
+        }
+        
+        .cv-content a {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .cv-content a:hover {
+            text-decoration: none;
+        }
+        
+        .cv-content a:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-accent);
+            transition: width 0.3s ease;
+        }
+        
+        .cv-content a:hover:after {
+            width: 100%;
+        }
+        
+        [data-bs-theme="dark"] .cv-content a {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Contact info styling */
+        .cv-content p:first-of-type {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        [data-bs-theme="dark"] .cv-content p:first-of-type {
+            color: #95a5a6;
+        }
+        
+        @media print {
+            .cv-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 1rem;
+            }
+            
+            .hero-banner {
+                display: none;
+            }
+            
+            .navbar {
+                display: none;
+            }
+            
+            footer {
+                display: none;
+            }
+        }
