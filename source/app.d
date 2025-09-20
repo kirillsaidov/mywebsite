@@ -17,8 +17,8 @@ void main()
     // configure routing
     auto router = new URLRouter;
     router.get("/", &routes.getHomePage);
-    router.get("/blog", &routes.getHomePage);
-    router.get("/cv", &routes.getCV);
+    router.get("/blog", &routes.getBlogPage);
+    router.get("/cv", &routes.getCVPage);
     router.get("*", serveStaticFiles("public/"));
 
     // init listener
