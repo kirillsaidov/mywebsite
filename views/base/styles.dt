@@ -47,11 +47,11 @@
     }
 
     .profile-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
         transition: transform 0.3s ease;
     }
 
@@ -60,10 +60,10 @@
     }
 
     .profile-image {
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
-        border: 5px solid rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.2);
         transition: transform 0.3s ease;
     }
 
@@ -104,10 +104,10 @@
     .btn-gradient {
         background: var(--gradient-secondary);
         border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
         color: white;
-        font-weight: 500;
+        font-weight: 400;
         transition: all 0.3s ease;
         text-decoration: none;
         display: inline-block;
@@ -121,17 +121,17 @@
 
     .social-links a {
         display: inline-block;
-        width: 50px;
-        height: 50px;
-        line-height: 50px;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
         text-align: center;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         color: white;
         text-decoration: none;
-        margin: 0 10px;
+        margin: 0 5px;
         transition: all 0.3s ease;
     }
 
@@ -142,13 +142,13 @@
     }
 
     .navbar {
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(5px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .navbar-brand, .nav-link {
-        font-weight: 500;
+        font-weight: 400;
     }
 
     /* Dark theme navbar text */
@@ -181,8 +181,8 @@
 
     .feature-card {
         background: var(--gradient-accent);
-        border-radius: 15px;
-        padding: 2rem;
+        border-radius: 8px;
+        padding: 1.5rem;
         margin: 1rem 0;
         color: white;
         transition: all 0.3s ease;
@@ -234,11 +234,11 @@
 
     .search-box {
         width: 100%;
-        padding: 1rem;
-        border-radius: 50px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
+        padding: 0.8rem;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
         color: white;
         font-size: 1rem;
         transition: all 0.3s ease;
@@ -250,10 +250,10 @@
 
     .search-box:focus {
         outline: none;
-        background: rgba(255, 255, 255, 0.2);
-        border-color: rgba(255, 255, 255, 0.5);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
     [data-bs-theme="dark"] .search-box {
@@ -274,22 +274,22 @@
         top: 80px;
         background: var(--gradient-secondary);
         color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 15px;
+        padding: 0.8rem 1.2rem;
+        border-radius: 6px;
         margin-bottom: 2rem;
-        font-size: 1.5rem;
-        font-weight: bold;
+        font-size: 1.3rem;
+        font-weight: 500;
         z-index: 10;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .blog-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 1.5rem;
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
         cursor: pointer;
@@ -298,9 +298,9 @@
     }
 
     .blog-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        background: rgba(255, 255, 255, 0.08);
     }
 
     .blog-card::before {
@@ -328,8 +328,8 @@
     }
 
     .blog-title {
-        font-size: 1.5rem;
-        font-weight: bold;
+        font-size: 1.3rem;
+        font-weight: 500;
         margin-bottom: 1rem;
         background: var(--gradient-accent);
         -webkit-background-clip: text;
@@ -368,10 +368,10 @@
     .blog-tag {
         background: var(--gradient-accent);
         color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
         font-size: 0.8rem;
-        font-weight: 500;
+        font-weight: 400;
         transition: all 0.3s ease;
     }
 
