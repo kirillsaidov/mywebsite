@@ -1,0 +1,132 @@
+extends base/layout
+
+block content
+    //- hero Banner
+    section.hero-banner
+        .container
+            .row.align-items-center
+                .col-lg-8
+                    h1.text-white.mb-3 KS' Blog
+                    p.text-white.mb-4
+                        | Sharing insights, tutorials, and experiences from my life journey.
+                .col-lg-4
+                    input.search-box(type="text", placeholder="Search articles...", id="searchInput")
+
+    //- blog Content
+    section.py-5
+        .container
+            //- group blog posts by year
+            div(id="blogContainer")
+                //- content will be populated by JavaScript
+            
+            //- no results message
+            .no-results(id="noResults", style="display: none;")
+                i.fas.fa-search.fa-3x.mb-3
+                h3 No articles found
+                p Try adjusting your search terms
+
+    //- javaScript for blog functionality
+    script.
+        // blog posts will be grouped and displayed here
+        let allBlogPosts = [];
+        let filteredPosts = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // load blog data
+            allBlogPosts = getBlogMetadata(); // this function returns a list by querying my API
+            filteredPosts = allBlogPosts;
+            
+            // display posts
+            displayBlogPosts(filteredPosts);
+            
+            // search functionality: search by word
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                filteredPosts = allBlogPosts.filter(post => 
+                    post.title.toLowerCase().includes(searchTerm) ||
+                    post.description.toLowerCase().includes(searchTerm) ||
+                    post.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+                displayBlogPosts(filteredPosts);
+            });
+        });
+        
+        function displayBlogPosts(posts) {
+            const container = document.getElementById('blogContainer');
+            const noResults = document.getElementById('noResults');
+
+            if (posts.length === 0) {
+                container.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+            noResults.style.display = 'none';
+            
+            // group posts by year
+            const postsByYear = groupPostsByYear(posts);
+            
+            // generate HTML
+            let html = '';
+            Object.keys(postsByYear).sort((a, b) => b - a).forEach(year => {
+                html += `
+                    <div class="year-section fade-in">
+                        <div class="year-header">
+                            <i class="fas fa-calendar-alt me-2"></i>${year}
+                        </div>
+                `;
+                
+                postsByYear[year].forEach(post => {
+                    const publishDate = new Date(post.created_at);
+                    const formattedDate = publishDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    const tagsHtml = post.tags.map(tag => 
+                        `<span class="blog-tag">${tag}</span>`
+                    ).join('');
+                    
+                    html += `
+                        <div class="blog-card" onclick="navigateToPost('${post.title}')">
+                            <h2 class="blog-title">${post.title}</h2>
+                            <p class="blog-description">${post.description}</p>
+                            <div class="blog-meta">
+                                <div class="blog-date">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    ${formattedDate}
+                                </div>
+                                <div class="blog-tags">
+                                    ${tagsHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function groupPostsByYear(posts) {
+            return posts.reduce((grouped, post) => {
+                const year = new Date(post.created_at).getFullYear();
+                if (!grouped[year]) {
+                    grouped[year] = [];
+                }
+                grouped[year].push(post);
+                return grouped;
+            }, {});
+        }
+        
+        function navigateToPost(title) {
+            // convert title to URL-friendly format
+            const urlTitle = titleToURLFriendlyFormat(title);
+            window.location.href = `/blog/${urlTitle}`;
+        }
+        
+
+

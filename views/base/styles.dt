@@ -1,4 +1,9 @@
 :css
+
+    /* ----------------
+       layout.dt
+    */
+
     :root {
         --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -200,5 +205,202 @@
         to {
             opacity: 1;
             transform: translateY(0);
+        }
+    }
+
+    /* ----------------
+       blog.dt
+    */
+
+    .hero-banner {
+        background: var(--gradient-primary);
+        min-height: 40vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="200" cy="300" r="100" fill="url(%23a)"/><circle cx="800" cy="200" r="150" fill="url(%23a)"/><circle cx="600" cy="700" r="120" fill="url(%23a)"/></svg>');
+        animation: float 20s ease-in-out infinite;
+    }
+
+    .search-box {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-box::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .search-box:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    [data-bs-theme="dark"] .search-box {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    [data-bs-theme="dark"] .search-box:focus {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .year-section {
+        margin-bottom: 3rem;
+    }
+
+    .year-header {
+        position: sticky;
+        top: 80px;
+        background: var(--gradient-secondary);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        z-index: 10;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .blog-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .blog-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s;
+    }
+
+    .blog-card:hover::before {
+        left: 100%;
+    }
+
+    [data-bs-theme="dark"] .blog-card {
+        background: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-bs-theme="dark"] .blog-card:hover {
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    .blog-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .blog-description {
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        opacity: 0.9;
+    }
+
+    .blog-meta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .blog-date {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .blog-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .blog-tag {
+        background: var(--gradient-accent);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .blog-tag:hover {
+        transform: scale(1.05);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        opacity: 0.7;
+    }
+
+    .fade-in {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @media (max-width: 768px) {
+        .year-header {
+            position: static;
+            font-size: 1.3rem;
+        }
+        
+        .blog-meta {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .blog-tags {
+            width: 100%;
         }
     }
