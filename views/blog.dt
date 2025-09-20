@@ -2,7 +2,7 @@ extends base/layout
 
 block content
     //- hero Banner
-    section.hero-banner
+    section.hero-banner#home
         .container
             .row.align-items-center
                 .col-lg-8

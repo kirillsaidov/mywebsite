@@ -11,7 +11,7 @@ void main()
 {
     // configure server settings
     auto settings = new HTTPServerSettings;
-    settings.port = 8081;
+    settings.port = 8080;
     settings.bindAddresses = ["::1", "127.0.0.1"];
 
     // configure routing
