@@ -25,7 +25,7 @@ block content
 
     //- CV JavaScript functionality
     script.
-        // Load and display PDF in embedded viewer
+        //- Load and display PDF in embedded viewer
         function loadCVPDF() {
             const pdfPath = apiGetPublicItemPathCV();
             const container = document.getElementById('pdfContainer');
@@ -40,9 +40,10 @@ block content
                 />
             `;
         }
-        
+
+        //- Page init
         document.addEventListener('DOMContentLoaded', function() {
-            // set download link
+            //- Set download link
             const downloadCVLink = document.getElementById('downloadCVLink');
             if (downloadCVLink) {
                 downloadCVLink.addEventListener('click', function(e) {
@@ -52,7 +53,7 @@ block content
                 });
             }
             
-            // load pdf
+            //- Load pdf
             loadCVPDF();
         });
 
