@@ -1,7 +1,7 @@
 :javascript
 
     /* ----------------
-       layout.dt 
+       Basic layout functionality for UI.
     */
 
     function toggleTheme() {
@@ -45,7 +45,7 @@
     });
 
     /* ----------------
-       blog.dt 
+       Helpers.
     */
 
     function titleToURLFriendlyFormat(title) {
@@ -54,4 +54,17 @@
             .replace(/\s+/g, '-')
             .replace(/-+/g, '-');
     }
+
+    /* ----------------
+       API.
+    */
+
+    function apiGetPublicItemPathAvatar() {
+        return "/avatar.png";
+    }
+
+    function apiGetPublicItemPathCV() {
+        return "/cv.pdf";
+    }
+
 

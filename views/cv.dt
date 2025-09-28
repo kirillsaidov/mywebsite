@@ -8,99 +8,54 @@ block content
                 .col-lg-8
                     h1.text-white.mb-3 CV
                     p.text-white.mb-4
-                        | Preferred means of communication is email: 
-                        a(href="#", title="Email", id="email-link") 
-                            i.fas.fa-envelope.me-2
-                .col-lg-4
-                    button.btn-gradient(onclick="downloadPDF()")
-                        i.fas.fa-download.me-2
-                        | Download PDF
+                        | Preferred means of communication: E-mail.
 
     //- CV Content
     section.py-5
         .container
             .row
+                .text-center.mt-3
+                    a.btn-gradient#downloadCVLink(href="#", role="button")
+                        i.fas.fa-download.me-2
+                        | Download PDF
                 .col-12
-                    .cv-container#cvContainer
-                        //- PDF viewer will be loaded here
-                        
+                    .cv-container
+                        .pdf-viewer-container#pdfContainer
+                            //- PDF will be loaded here
+
     //- CV JavaScript functionality
     script.
-        // Get CV PDF path or content
-        function getCVPath() {
-            // TODO: This will be replaced with actual API call that returns PDF path
-            // For now, returning example path
-            return "/cv.pdf"; // or return the actual file path from your D backend
-        }
-        
         // Load and display PDF in embedded viewer
         function loadCVPDF() {
-            const pdfPath = getCVPath();
-            const container = document.getElementById('cvContainer');
+            const pdfPath = apiGetPublicItemPathCV();
+            const container = document.getElementById('pdfContainer');
             
-            // Create embedded PDF viewer
             container.innerHTML = `
-                <div class="pdf-viewer-container">
-                    <embed 
-                        src="${pdfPath}" 
-                        type="application/pdf" 
-                        width="100%" 
-                        height="800px"
-                        class="pdf-embed"
-                    />
-                    <div class="pdf-fallback" style="display: none;">
-                        <div class="text-center p-4">
-                            <i class="fas fa-file-pdf fa-4x mb-3" style="color: #e74c3c;"></i>
-                            <h4>PDF Viewer Not Available</h4>
-                            <p class="mb-3">Your browser doesn't support embedded PDF viewing.</p>
-                            <button class="btn-gradient" onclick="downloadCV()">
-                                <i class="fas fa-download me-2"></i>
-                                Download CV Instead
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <embed 
+                    src="${pdfPath}" 
+                    type="application/pdf" 
+                    width="100%" 
+                    height="800px"
+                    class="pdf-embed"
+                />
             `;
-            
-            // Check if PDF loaded successfully, show fallback if not
-            const embed = container.querySelector('.pdf-embed');
-            const fallback = container.querySelector('.pdf-fallback');
-            
-            embed.addEventListener('error', function() {
-                embed.style.display = 'none';
-                fallback.style.display = 'block';
-            });
-            
-            // For some browsers, check after a delay
-            setTimeout(function() {
-                if (embed.offsetHeight === 0) {
-                    embed.style.display = 'none';
-                    fallback.style.display = 'block';
-                }
-            }, 2000);
         }
         
-        // Download CV PDF file
-        function downloadCV() {
-            const pdfName = getCVPath();
-            
-            // Create temporary download link
-            const link = document.createElement('a');
-            link.href = pdfName;
-            link.download = 'Kirill_Saidov_CV.pdf';
-            link.target = '_blank';
-            
-            // Trigger download
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-        
-        // Load CV when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // set download link
+            const downloadCVLink = document.getElementById('downloadCVLink');
+            if (downloadCVLink) {
+                downloadCVLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pdfUrl = apiGetPublicItemPathCV();
+                    window.open(pdfUrl, '_blank', 'noopener');
+                });
+            }
+            
+            // load pdf
             loadCVPDF();
         });
-    
+
     //- CV-specific styles
     style.
         .cv-container {
@@ -168,6 +123,17 @@ block content
             color: #adb5bd;
         }
         
+        .btn-gradient:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-gradient:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
         /* Mobile responsive */
         @media (max-width: 768px) {
             .cv-container {
@@ -184,17 +150,4 @@ block content
             .pdf-embed {
                 height: 500px;
             }
-        }
-        
-        /* Loading state */
-        .pdf-loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 400px;
-            color: #6c757d;
-        }
-        
-        [data-bs-theme="dark"] .pdf-loading {
-            color: #adb5bd;
         }
