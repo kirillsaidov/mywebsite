@@ -1,19 +1,38 @@
 module api.blog;
 
-import std.datetime : DateTime;
+import std.datetime : DateTime, Clock;
 
 import vibe.http.server : HTTPMethod;
 import vibe.web.rest : rootPathFromName, 
                        path, 
                        method;
 
+import db;
+
+@safe:
+
 struct BlogMetadata
 {
-    uint id;
     string name;
     string desc;
-    DateTime created_at;
-    DateTime modified_at;
+    // DateTime created_at;
+    // DateTime modified_at;
+
+    // this(in string name, in string desc) 
+    // {
+    //     this.name = name;
+    //     this.desc = desc;
+    //     this.created_at = cast(DateTime)Clock.currTime();
+    //     this.modified_at = cast(DateTime)Clock.currTime();
+    // }
+
+    // this(in string name, in string desc, in DateTime created_at, in DateTime modified_at) 
+    // {
+    //     this.name = name;
+    //     this.desc = desc;
+    //     this.created_at = created_at;
+    //     this.modified_at = modified_at;
+    // }
 }
 
 struct Blog 
@@ -22,34 +41,40 @@ struct Blog
     string content;
 }
 
-@safe:
-
 @rootPathFromName
 interface BlogAPI
 {
-    string getApiTest1();
+    BlogMetadata[] getListBlogMetadata();
 
-    @path("test2") @method(HTTPMethod.GET)
-    string apiTest2();
+    // @path("blogMeta") @method(HTTPMethod.GET)
+    // string apiTest2();
 
-    @path("list") @method(HTTPMethod.GET)
-    Blog[] list();
+    // @path("list") @method(HTTPMethod.GET)
+    // Blog[] list();
 }
 
 class BlogImpl : BlogAPI
 {
-    override string getApiTest1()
+    import std.conv : to;
+    import std.array : array;
+
+    import vibe.db.mongo.mongo;
+
+    override BlogMetadata[] getListBlogMetadata()
     {
-        return "test1";
+        auto d = BlogMetadata("", "");
+        auto col = db.getCollection("blog");
+        auto list = col.find!BlogMetadata().array;
+        return list;
     }
 
-    override string apiTest2() 
-    {
-        return "test2";
-    }
+    // override string apiTest2() 
+    // {
+    //     return "test2";
+    // }
 
-    override Blog[] list() 
-    {
-        return [Blog(BlogMetadata(1)), Blog(BlogMetadata(2))];
-    }
+    // override Blog[] list() 
+    // {
+    //     return [Blog(BlogMetadata(1)), Blog(BlogMetadata(2))];
+    // }
 }
