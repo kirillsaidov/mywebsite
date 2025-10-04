@@ -3,15 +3,17 @@ module config;
 import std.file : readText;
 import std.json : JSONValue, parseJSON;
 
-JSONValue _config;
+/// Website-wide config
+private JSONValue config;
 static this() 
 {
     // load config
     auto configText = readText("config/config.json");
-    _config = parseJSON(configText);
+    config = parseJSON(configText);
 }
 
 JSONValue getConfig()
 {
-    return _config;
+    return config;
 }
+

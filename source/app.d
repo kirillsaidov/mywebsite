@@ -4,6 +4,7 @@ import std.stdio;
 import vibe.vibe;
 
 // routes
+import api;
 import routes;
 
 
@@ -20,6 +21,7 @@ void main()
     router.get("/blog", &routes.getBlogPage);
     router.get("/cv", &routes.getCVPage);
     router.get("*", serveStaticFiles("public/"));
+    router.registerRestInterface(new api.BlogImpl());
 
     // init listener
     auto listener = listenHTTP(settings, router);
