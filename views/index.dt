@@ -9,7 +9,7 @@ block content
                     .profile-card.text-center.text-lg-start
                         .row.align-items-center
                             .col-lg-4.mb-4.mb-lg-0
-                                img.profile-image.mx-auto.d-block(src="https://media.licdn.com/dms/image/v2/D4D03AQFBr6WW1hROrQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1720340476458?e=1758153600&v=beta&t=KNeu12Hgs0d7W6dbqTvJoFBgwGWx_eCd5_gwL3tHlKI", alt="Profile Photo")
+                                img.profile-image.mx-auto.d-block#avatar(src="#", alt="Profile Photo")
                             .col-lg-8
                                 .container
                                     h1.text-white.mb-3.animated-text
@@ -38,10 +38,19 @@ block content
                             i.fas.fa-envelope
     
     script.
-        // email
-        document.getElementById('email-link').addEventListener('click', function(e) {
-            e.preventDefault();
-            const user = '#{about.email_user}';
-            const domain = '#{about.email_domain}';
-            window.location.href = 'mailto:' + user + '@' + domain;
+        //- Page init
+        document.addEventListener('DOMContentLoaded', function() {
+            //- Set download link
+            document.getElementById('avatar').src = apiGetPublicItemPathAvatar();
+            
+            //- Set email
+            document.getElementById('email-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                const user = '#{about.email_user}';
+                const domain = '#{about.email_domain}';
+                window.location.href = 'mailto:' + user + '@' + domain;
+            });
         });
+
+        
+
