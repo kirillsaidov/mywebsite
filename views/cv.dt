@@ -27,9 +27,16 @@ block content
     script.
         //- Load and display PDF in embedded viewer
         function loadCVPDF() {
+            //- Set download link
             const pdfPath = apiGetPublicItemPathCV();
+            document.getElementById('downloadCVLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                const pdfUrl = pdfPath;
+                window.open(pdfUrl, '_blank', 'noopener');
+            });
+
+            //- Load pdf container
             const container = document.getElementById('pdfContainer');
-            
             container.innerHTML = `
                 <embed 
                     src="${pdfPath}" 
@@ -43,16 +50,6 @@ block content
 
         //- Page init
         document.addEventListener('DOMContentLoaded', function() {
-            //- Set download link
-            const downloadCVLink = document.getElementById('downloadCVLink');
-            if (downloadCVLink) {
-                downloadCVLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const pdfUrl = apiGetPublicItemPathCV();
-                    window.open(pdfUrl, '_blank', 'noopener');
-                });
-            }
-            
             //- Load pdf
             loadCVPDF();
         });
