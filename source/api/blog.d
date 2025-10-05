@@ -15,6 +15,7 @@ import vibe.http.server : HTTPMethod,
 import vibe.http.status : HTTPStatus;
 import vibe.core.log : logInfo, logError, logWarn;
 
+import db : getMongoCollection;
 import config : getAPIKey;
 
 @safe:
@@ -23,8 +24,8 @@ import config : getAPIKey;
 struct BlogMetadata
 {
     string title;
-    string description;
     string[] tags;
+    string description;
     SysTime createdAt;
     SysTime modifiedAt;
 
@@ -92,10 +93,13 @@ AuthInfo authenticateRequest(HTTPServerRequest req, HTTPServerResponse res) @saf
     }
     
     auto providedKey = authValue[7..$].strip(); // Remove "Bearer " prefix
-    
-    // Get the expected API key from the implementation instance
-    // This will be checked in the implementation methods
-    return AuthInfo(providedKey == getAPIKey());
+    if (providedKey != getAPIKey())
+    {
+        logWarn("Unauthorized API access attempt with invalid key.");
+        throw new HTTPStatusException(HTTPStatus.unauthorized, "Invalid API key");
+    }
+
+    return AuthInfo(true);
 }
 
 @rootPathFromName
@@ -144,7 +148,32 @@ class BlogImpl : BlogAPI
 
     override ResponseStatus postPosts(BlogPostRequest blogPost, AuthInfo auth)
     {
-        return ResponseStatus();
+        // create blog record
+        auto record = BlogPost(
+            BlogMetadata(
+                blogPost.title,
+                blogPost.description,
+                blogPost.tags,
+                Clock.currTime(),
+                Clock.currTime()
+            ),
+            blogPost.content
+        );
+
+        // get mongo collection
+        auto col = getMongoCollection("blog");
+
+        // check if it already exists
+        auto count = col.countDocuments(["metadata.title": record.metadata.title]);
+        if (count)
+        {
+            return ResponseStatus(false, "Blog post already exists!");
+        }
+
+        // save blog post to database
+        col.insertOne!BlogPost(record);
+        
+        return ResponseStatus(true, "Blog post successfully created!", record.serializeToJson);
     }
 
     override ResponseStatus putPost(string _title, BlogPostRequest blogPost, AuthInfo auth)

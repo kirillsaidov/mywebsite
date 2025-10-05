@@ -21,7 +21,7 @@ private
     }
 }
 
-auto getCollection(in string name)
+auto getMongoCollection(in string name)
 {
     if (!client) client = connectMongoDB(getMongoURI());
     return client.getDatabase(getMongoDefaultDB())[name];
