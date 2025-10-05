@@ -3,10 +3,8 @@ module app;
 import std.stdio;
 import vibe.vibe;
 
-// routes
 import api;
 import routes;
-
 
 void main()
 {
@@ -14,13 +12,31 @@ void main()
     auto settings = new HTTPServerSettings;
     settings.port = 8081;
     settings.bindAddresses = ["::1", "127.0.0.1"];
-
-    // configure routing
+    settings.errorPageHandler = (HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) @safe {
+        res.writeJsonBody([
+            "success": Json(false),
+            "error": Json(error.message),
+            "code": Json(error.code)
+        ]);
+    };
+    
+    // add routing
     auto router = new URLRouter;
     router.get("/", &routes.getHomePage);
     router.get("/blog", &routes.getBlogPage);
     router.get("/cv", &routes.getCVPage);
     router.get("*", serveStaticFiles("public/"));
+
+    // configure REST-specific settings
+    auto restSettings = new RestInterfaceSettings;
+    restSettings.errorHandler = (HTTPServerRequest req, HTTPServerResponse res, RestErrorInformation error) @safe {
+        res.writeJsonBody([
+            "success": Json(false),
+            "error": Json(error.exception.msg)
+        ]);
+    };
+
+    // add REST API
     router.registerRestInterface(new api.BlogImpl());
 
     // init listener
