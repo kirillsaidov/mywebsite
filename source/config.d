@@ -5,6 +5,7 @@ import std.json : JSONValue, parseJSON;
 
 /// Website-wide config
 private JSONValue config;
+
 static this() 
 {
     // load config

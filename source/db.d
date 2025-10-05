@@ -3,11 +3,13 @@ module db;
 import std.process : environment;
 import vibe.db.mongo.mongo : MongoClient, MongoDatabase, connectMongoDB;
 
-/// Mngo client
-MongoClient client;
+@safe:
 
 private
 {
+    /// Mongo client
+    MongoClient client;
+
     string getMongoURI()
     {
         return environment.get("MONGO_URI", "mongodb://localhost:27017/");
