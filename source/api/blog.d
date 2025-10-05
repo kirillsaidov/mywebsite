@@ -169,7 +169,7 @@ class BlogImpl : BlogAPI
 
     override ResponseStatus postPosts(BlogPostRequest blogPost, AuthInfo auth)
     {
-        // Validate all required fields are provided
+        // validate all required fields are provided
         if (blogPost.title.empty || blogPost.description.empty || 
             blogPost.tags.empty || blogPost.content.empty)
         {
