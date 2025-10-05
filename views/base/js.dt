@@ -22,7 +22,7 @@
 
     // Load saved theme on page load
     document.addEventListener('DOMContentLoaded', function() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         const html = document.documentElement;
         const themeIcon = document.getElementById('theme-icon');
         
