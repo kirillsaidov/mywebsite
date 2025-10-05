@@ -1,80 +1,163 @@
 module api.blog;
 
-import std.datetime : DateTime, Clock;
+import std.string : strip, startsWith;
+import std.datetime : SysTime, Clock;
 
-import vibe.http.server : HTTPMethod;
-import vibe.web.rest : rootPathFromName, 
-                       path, 
-                       method;
+import vibe.web.rest : rootPathFromName,
+    path,
+    method,
+    before;
+import vibe.data.json : Json, serializeToJson;
+import vibe.http.server : HTTPMethod,
+    HTTPServerRequest,
+    HTTPServerResponse,
+    HTTPStatusException;
+import vibe.http.status : HTTPStatus;
+import vibe.core.log : logInfo, logError, logWarn;
 
-import db;
+import config : getAPIKey;
 
 @safe:
 
+/// Blog post metadata structure
 struct BlogMetadata
 {
-    string name;
-    string desc;
-    // DateTime created_at;
-    // DateTime modified_at;
+    string title;
+    string description;
+    string[] tags;
+    SysTime createdAt;
+    SysTime modifiedAt;
 
-    // this(in string name, in string desc) 
-    // {
-    //     this.name = name;
-    //     this.desc = desc;
-    //     this.created_at = cast(DateTime)Clock.currTime();
-    //     this.modified_at = cast(DateTime)Clock.currTime();
-    // }
-
-    // this(in string name, in string desc, in DateTime created_at, in DateTime modified_at) 
-    // {
-    //     this.name = name;
-    //     this.desc = desc;
-    //     this.created_at = created_at;
-    //     this.modified_at = modified_at;
-    // }
+    this(in string title, in string description, string[] tags, in SysTime createdAt, in SysTime modifiedAt)
+    {
+        this.title = title;
+        this.description = description;
+        this.tags = tags;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
 }
 
-struct Blog 
+/// Complete blog post structure
+struct BlogPost
 {
     BlogMetadata metadata;
+    string content; // markdown
+}
+
+// -------------------------------//
+//     IMPLEMENTATION DETAILS     //
+// -------------------------------//
+
+/// Response for operations status
+struct ResponseStatus
+{
+    bool success;
+    string message;
+    Json data;
+}
+
+/// Request body for creating/updating blog posts
+struct BlogPostRequest
+{
+    string title;
+    string[] tags;
     string content;
+    string description;
+}
+
+/// Authentication information passed from @before handler
+struct AuthInfo
+{
+    bool authenticated;
+}
+
+/// Validate API key from Authorization header
+AuthInfo authenticateRequest(HTTPServerRequest req, HTTPServerResponse res) @safe
+{
+    auto authHeader = "Authorization" in req.headers;
+    if (!authHeader)
+    {
+        logWarn("Missing Authorization header.");
+        throw new HTTPStatusException(HTTPStatus.unauthorized, "Missing Authorization header");
+    }
+    
+    // Expected format: "Bearer your-api-key"
+    auto authValue = (*authHeader).strip();
+    
+    if (!authValue.startsWith("Bearer "))
+    {
+        logWarn("Invalid Authorization header format.");
+        throw new HTTPStatusException(HTTPStatus.unauthorized, "Invalid Authorization header format. Expected: Bearer <api-key>");
+    }
+    
+    auto providedKey = authValue[7..$].strip(); // Remove "Bearer " prefix
+    
+    // Get the expected API key from the implementation instance
+    // This will be checked in the implementation methods
+    return AuthInfo(providedKey == getAPIKey());
 }
 
 @rootPathFromName
 interface BlogAPI
 {
-    BlogMetadata[] getListBlogMetadata();
+    // GET /blog_api/posts/metadata - Get all blog metadata
+    @path("/posts/metadata")
+    @method(HTTPMethod.GET)
+    BlogMetadata[] getMetadata();
 
-    // @path("blogMeta") @method(HTTPMethod.GET)
-    // string apiTest2();
-
-    // @path("list") @method(HTTPMethod.GET)
-    // Blog[] list();
+    // GET /blog_api/posts/:title - Get specific blog post by title
+    @path("/posts/:title")
+    @method(HTTPMethod.GET)
+    BlogPost getPost(string _title);
+    
+    // POST /blog_api/posts - Create new blog post (requires Authorization header)
+    @path("/posts")
+    @method(HTTPMethod.POST)
+    @before!authenticateRequest("auth")
+    ResponseStatus postPosts(BlogPostRequest blogPost, AuthInfo auth);
+    
+    // PUT /blog_api/posts/:title - Update blog post (requires Authorization header)
+    @path("/posts/:title")
+    @method(HTTPMethod.PUT)
+    @before!authenticateRequest("auth")
+    ResponseStatus putPost(string _title, BlogPostRequest blogPost, AuthInfo auth);
+    
+    // DELETE /blog_api/posts/:title - Delete blog post (requires Authorization header)
+    @path("/posts/:title")
+    @method(HTTPMethod.DELETE)
+    @before!authenticateRequest("auth")
+    ResponseStatus deletePost(string _title, AuthInfo auth);    
 }
 
 class BlogImpl : BlogAPI
 {
-    import std.conv : to;
-    import std.array : array;
-
-    import vibe.db.mongo.mongo;
-
-    override BlogMetadata[] getListBlogMetadata()
+    override BlogMetadata[] getMetadata()
     {
-        auto d = BlogMetadata("", "");
-        auto col = db.getCollection("blog");
-        auto list = col.find!BlogMetadata().array;
-        return list;
+        return [];
     }
 
-    // override string apiTest2() 
-    // {
-    //     return "test2";
-    // }
+    override BlogPost getPost(string _title)
+    {
+        return BlogPost();
+    }
 
-    // override Blog[] list() 
-    // {
-    //     return [Blog(BlogMetadata(1)), Blog(BlogMetadata(2))];
-    // }
+    override ResponseStatus postPosts(BlogPostRequest blogPost, AuthInfo auth)
+    {
+        return ResponseStatus();
+    }
+
+    override ResponseStatus putPost(string _title, BlogPostRequest blogPost, AuthInfo auth)
+    {
+        return ResponseStatus();
+    }
+
+    override ResponseStatus deletePost(string _title, AuthInfo auth)
+    {
+        return ResponseStatus();
+    }
 }
+
+
+
+
