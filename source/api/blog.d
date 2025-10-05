@@ -1,13 +1,16 @@
 module api.blog;
 
+import std.array : array, empty;
 import std.string : strip, startsWith;
-import std.datetime : SysTime, Clock;
+import std.datetime : SysTime, Clock, UTC;
+import std.algorithm : map;
 
 import vibe.web.rest : rootPathFromName,
     path,
     method,
     before;
 import vibe.data.json : Json, serializeToJson;
+import vibe.data.serialization : optional;
 import vibe.http.server : HTTPMethod,
     HTTPServerRequest,
     HTTPServerResponse,
@@ -61,10 +64,10 @@ struct ResponseStatus
 /// Request body for creating/updating blog posts
 struct BlogPostRequest
 {
-    string title;
-    string[] tags;
-    string content;
-    string description;
+    @optional string title = "";
+    @optional string[] tags = [];
+    @optional string content = "";
+    @optional string description = "";
 }
 
 /// Authentication information passed from @before handler
@@ -106,7 +109,7 @@ AuthInfo authenticateRequest(HTTPServerRequest req, HTTPServerResponse res) @saf
 interface BlogAPI
 {
     // GET /blog_api/posts/metadata - Get all blog metadata
-    @path("/posts/metadata")
+    @path("/posts")
     @method(HTTPMethod.GET)
     BlogMetadata[] getMetadata();
 
@@ -138,24 +141,49 @@ class BlogImpl : BlogAPI
 {
     override BlogMetadata[] getMetadata()
     {
-        return [];
+        // get mongo collection and find all blog metadata
+        auto col = getMongoCollection("blog");
+        auto posts = col.find!BlogPost().array;
+        if (!posts.length) return [];
+
+        // convert to metadata
+        auto metadata = posts.map!(post => post.metadata).array;
+
+        return metadata;
     }
 
     override BlogPost getPost(string _title)
     {
-        return BlogPost();
+        // get mongo collection
+        auto col = getMongoCollection("blog");
+
+        // find blog post
+        auto blogPost = col.findOne!BlogPost(["metadata.title": _title]);
+        if (blogPost.isNull)
+        {
+            throw new HTTPStatusException(HTTPStatus.notFound, "Blog post not found: " ~ _title);
+        }
+        
+        return blogPost.get;
     }
 
     override ResponseStatus postPosts(BlogPostRequest blogPost, AuthInfo auth)
     {
+        // Validate all required fields are provided
+        if (blogPost.title.empty || blogPost.description.empty || 
+            blogPost.tags.empty || blogPost.content.empty)
+        {
+            return ResponseStatus(false, "All fields (title, description, tags, content) are required when creating a post!");
+        }
+        
         // create blog record
         auto record = BlogPost(
             BlogMetadata(
                 blogPost.title,
                 blogPost.description,
                 blogPost.tags,
-                Clock.currTime(),
-                Clock.currTime()
+                Clock.currTime(UTC()),
+                Clock.currTime(UTC())
             ),
             blogPost.content
         );
@@ -173,17 +201,55 @@ class BlogImpl : BlogAPI
         // save blog post to database
         col.insertOne!BlogPost(record);
         
-        return ResponseStatus(true, "Blog post successfully created!", record.serializeToJson);
+        return ResponseStatus(true, "Blog post created successfully!", record.serializeToJson);
     }
 
     override ResponseStatus putPost(string _title, BlogPostRequest blogPost, AuthInfo auth)
     {
-        return ResponseStatus();
+        // get mongo collection
+        auto col = getMongoCollection("blog");
+
+        // check if it already exists
+        auto record = col.findOne!BlogPost(["metadata.title": _title]);
+        if (record.isNull)
+        {
+            return ResponseStatus(false, "Blog post not found: " ~ _title);
+        }
+
+        // create blog record
+        auto newRecord = BlogPost(
+            BlogMetadata(
+                blogPost.title.empty ? record.get.metadata.title : blogPost.title,
+                blogPost.description.empty ? record.get.metadata.description : blogPost.description,
+                blogPost.tags.empty ? record.get.metadata.tags : blogPost.tags,
+                record.get.metadata.createdAt,
+                Clock.currTime(UTC())
+            ),
+            blogPost.content.empty ? record.get.content : blogPost.content,
+        );
+
+        // update database
+        col.replaceOne(["metadata.title": _title], newRecord);
+        
+        return ResponseStatus(true, "Blog post updated successfully!", newRecord.serializeToJson);
     }
 
     override ResponseStatus deletePost(string _title, AuthInfo auth)
     {
-        return ResponseStatus();
+        // get mongo collection
+        auto col = getMongoCollection("blog");
+
+        // find blog post
+        auto count = col.countDocuments(["metadata.title": _title]);
+        if (!count)
+        {
+            throw new HTTPStatusException(HTTPStatus.notFound, "Blog post not found: " ~ _title);
+        }
+
+        // delete blog post
+        col.deleteOne(["metadata.title": _title]);
+        
+        return ResponseStatus(true, "Blog post deleted successfully!");
     }
 }
 
