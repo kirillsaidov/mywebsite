@@ -58,7 +58,7 @@ struct ResponseStatus
 {
     bool success;
     string message;
-    Json data;
+    Json data = Json.emptyObject;
 }
 
 /// Request body for creating/updating blog posts
@@ -86,7 +86,7 @@ AuthInfo authenticateRequest(HTTPServerRequest req, HTTPServerResponse res) @saf
         throw new HTTPStatusException(HTTPStatus.unauthorized, "Missing Authorization header");
     }
     
-    // Expected format: "Bearer your-api-key"
+    // expected format: "Bearer your-api-key"
     auto authValue = (*authHeader).strip();
     
     if (!authValue.startsWith("Bearer "))
@@ -95,7 +95,7 @@ AuthInfo authenticateRequest(HTTPServerRequest req, HTTPServerResponse res) @saf
         throw new HTTPStatusException(HTTPStatus.unauthorized, "Invalid Authorization header format. Expected: Bearer <api-key>");
     }
     
-    auto providedKey = authValue[7..$].strip(); // Remove "Bearer " prefix
+    auto providedKey = authValue[7..$].strip(); // remove "Bearer " prefix
     if (providedKey != getAPIKey())
     {
         logWarn("Unauthorized API access attempt with invalid key.");
