@@ -3,13 +3,17 @@ module api.internal;
 import std.file : write, read, exists, mkdirRecurse;
 import std.path : dirName, extension;
 import std.string : toLower;
+import std.algorithm : among;
 
 import vibe.web.rest : rootPathFromName, path, method, before;
 import vibe.http.server : HTTPMethod, HTTPServerRequest, HTTPServerResponse;
 import vibe.core.log : logInfo, logError;
 import vibe.core.core : Task;
 
+import config : UploadSizeLimit, buildPublicPath;
 import api.blog : ResponseStatus, AuthInfo, authenticateRequest;
+import tools.image : imageConvertResize, ImageFormat, ImageSize;
+import tools.security : validateGetFile;
 
 @safe:
 
@@ -67,16 +71,15 @@ class InternalImpl : InternalAPI
             return ResponseStatus(false, "Invalid file type. Only PDF files are allowed.");
         }
 
-        // ensure public directory exists
-        immutable targetPath = "public/cv.pdf";
-        auto dir = dirName(targetPath);
-        if (!exists(dir))
+        // validate file contents
+        auto fileData = validateGetFile(ext, file.tempPath.toString());
+        if (!fileData)
         {
-            mkdirRecurse(dir);
+            return ResponseStatus(false, "Invalid file. File is not a valid PDF.");
         }
             
-        // read and save file
-        auto fileData = () @trusted { return cast(ubyte[])read(file.tempPath.toString()); }();
+        // save to disk
+        immutable targetPath = buildPublicPath("cv.pdf");
         write(targetPath, fileData);
 
         return ResponseStatus(true, "CV updated!");
@@ -96,28 +99,29 @@ class InternalImpl : InternalAPI
             
         // validate file type (accept common image formats)
         auto ext = file.filename.name.extension.toLower;
-        if (ext != ".jpg" && ext != ".jpeg" && ext != ".png")
+        if (!ext.among(".png", ".jpg", ".jpeg"))
         {
             return ResponseStatus(false, "Invalid file type. Only JPEG and PNG images are allowed.");
         }
-            
-        // determine extension based on file extension
-        string extension = ext == ".png" ? ".png" : ".jpg";
-            
-        // save as avatar with appropriate extension
-        immutable targetPath = "public/avatar" ~ extension;
-        auto dir = dirName(targetPath);
-        if (!exists(dir))
+
+        // validate file contents
+        auto fileData = validateGetFile(ext, file.tempPath.toString());
+        if (!fileData)
         {
-            mkdirRecurse(dir);
+            return ResponseStatus(false, "Invalid file. File is not a valid JPEG or PNG image.");
         }
             
-        // read and save file
-        auto fileData = () @trusted { return cast(ubyte[])read(file.tempPath.toString()); }();
-        write(targetPath, fileData);
-            
+        // convert to PNG (default format) and save
+        immutable targetPath = buildPublicPath("avatar.png");
+        auto imageData = () @trusted {
+            return imageConvertResize(
+                fileData, ImageSize(), ImageFormat.PNG);
+        }();
+        write(targetPath, imageData);
+        
         return ResponseStatus(true, "Avatar updated!");
     }
 }
+
 
 
