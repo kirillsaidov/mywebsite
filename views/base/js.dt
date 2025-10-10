@@ -60,7 +60,7 @@
     */
 
     function apiGetPublicItemPathAvatar() {
-        return "/avatar.jpg";
+        return "/avatar.png";
     }
 
     function apiGetPublicItemPathCV() {
