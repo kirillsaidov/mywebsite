@@ -36,7 +36,7 @@ static this()
 enum UploadSizeLimit : int
 {
     image = 5_000_000,
-    pdf = 10_000_000,
+    pdf = 5_000_000,
 }
 
 /// Get config JSON

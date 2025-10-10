@@ -12,6 +12,7 @@ void main()
     auto settings = new HTTPServerSettings;
     settings.port = 8081;
     settings.bindAddresses = ["::1", "127.0.0.1"];
+    settings.maxRequestSize = 10_000_000; // 10MB
     settings.errorPageHandler = (HTTPServerRequest req, HTTPServerResponse res, HTTPServerErrorInfo error) @safe {
         res.writeJsonBody([
             "success": Json(false),

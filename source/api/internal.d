@@ -3,6 +3,7 @@ module api.internal;
 import std.file : write, read, exists, mkdirRecurse;
 import std.path : dirName, extension;
 import std.string : toLower;
+import std.format : format;
 import std.algorithm : among;
 
 import vibe.web.rest : rootPathFromName, path, method, before;
@@ -77,6 +78,13 @@ class InternalImpl : InternalAPI
         {
             return ResponseStatus(false, "Invalid file. File is not a valid PDF.");
         }
+
+        // validate file size
+        if (fileData.length > UploadSizeLimit.pdf)
+        {
+            return ResponseStatus(false,
+                "File too large. Maximum size is %sMB.".format(UploadSizeLimit.pdf / 1_000_000));
+        }
             
         // save to disk
         immutable targetPath = buildPublicPath("cv.pdf");
@@ -111,6 +119,13 @@ class InternalImpl : InternalAPI
             return ResponseStatus(false, "Invalid file. File is not a valid JPEG or PNG image.");
         }
             
+        // validate file size
+        if (fileData.length > UploadSizeLimit.image)
+        {
+            return ResponseStatus(false,
+                "File too large. Maximum size is %sMB.".format(UploadSizeLimit.image / 1_000_000));
+        }
+
         // convert to PNG (default format) and save
         immutable targetPath = buildPublicPath("avatar.png");
         auto imageData = () @trusted {
