@@ -130,7 +130,7 @@ class InternalImpl : InternalAPI
         immutable targetPath = buildPublicPath("avatar.png");
         auto imageData = () @trusted {
             return imageConvertResize(
-                fileData, ImageSize(), ImageFormat.PNG);
+                fileData, ImageSize(512), ImageFormat.PNG);
         }();
         write(targetPath, imageData);
         
