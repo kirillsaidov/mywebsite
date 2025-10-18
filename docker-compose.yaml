@@ -1,0 +1,17 @@
+services:
+  mywebsite:
+    build: .
+    container_name: mywebsite
+    ports:
+      - "${BIND_PORT:-8081}:${BIND_PORT:-8081}"
+    environment:
+      - API_KEY=${API_KEY}
+      - BIND_PORT=${BIND_PORT:-8081}
+      - BIND_ADDRESS=${BIND_ADDRESS:-0.0.0.0}
+    volumes:
+      - ./public:/app/public
+      - ./config:/app/config
+    restart: unless-stopped
+
+
+
