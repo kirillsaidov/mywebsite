@@ -49,19 +49,19 @@ MONGO_DB_NAME=mywebsite
 
 ```bash
 # build and start all services
-docker-compose up -d
+docker compose up -d
 
 # view logs
-docker-compose logs -f
+docker compose logs -f
 
 # check status
-docker-compose ps
+docker compose ps
 
 # stop services
-docker-compose down
+docker compose down
 
 # stop and remove volumes (deletes database data)
-docker-compose down -v
+docker compose down -v
 ```
 
 ## API Documentation
