@@ -8,3 +8,10 @@ void getBlogPage(HTTPServerRequest req, HTTPServerResponse res)
 }
 
 
+void getBlogPostPage(HTTPServerRequest req, HTTPServerResponse res)
+{
+    res.render!("blog_post.dt");
+}
+
+
+
