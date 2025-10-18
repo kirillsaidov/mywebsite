@@ -66,3 +66,30 @@
     function apiGetPublicItemPathCV() {
         return "/cv.pdf";
     }
+
+    async function apiGetBlogMetadata() {
+        try {
+            const response = await fetch('/blog_api/posts');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch blog posts');
+            }
+
+            const metadata = await response.json();
+
+            // Transform API response to match frontend format
+            return metadata.map(post => ({
+                title: post.title,
+                description: post.description,
+                created_at: post.createdAt,
+                modified_at: post.modifiedAt,
+                tags: post.tags
+            }));
+        } catch (error) {
+            console.error('Error loading blog posts:', error);
+            return [];
+        }        
+    }
+
+
+
