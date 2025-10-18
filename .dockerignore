@@ -1,0 +1,25 @@
+# Build artifacts
+*.o
+*.a
+*.so
+*.dylib
+mywebsite
+.dub/
+
+# Development files
+.git/
+.gitignore
+.vscode/
+*.md
+!README.md
+
+# Runtime generated files
+public/
+blog_posts/
+
+# System files
+.DS_Store
+Thumbs.db
+
+
+
