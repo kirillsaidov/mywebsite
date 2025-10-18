@@ -25,6 +25,7 @@ void main()
     auto router = new URLRouter;
     router.get("/", &routes.getHomePage);
     router.get("/blog", &routes.getBlogPage);
+    router.get("/blog/:title", &routes.getBlogPostPage);
     router.get("/cv", &routes.getCVPage);
     router.get("*", serveStaticFiles("public/"));
 
