@@ -1,0 +1,162 @@
+extends base/layout
+
+block content
+    //- hero banner
+    section.hero-banner#home
+        .container
+            .row.align-items-center
+                .col-lg-8
+                    div#blogPostContainer(style="display: none;")
+                        h1.text-white.mb-3#postTitle
+                        .post-meta.mb-4
+                            div.mb-2
+                                span.text-white#postDate
+                                    i.fas.fa-calendar.me-2
+                            div.mb-2
+                                span.text-white#postUpdatedDate(style="display: none;")
+                                    small
+                                        i.fas.fa-edit.me-2
+                            div
+                                span.text-white#postTags
+
+    //- blog post content
+    section.py-5
+        .container
+            .row
+                .col-12
+                    //- loading spinner
+                    .loading-spinner#loadingSpinner
+                        .spinner-border.text-primary(role="status")
+                            span.visually-hidden Loading...
+                        p.mt-3 Loading blog post...
+                    
+                    //- error message
+                    .error-message#errorMessage(style="display: none;")
+                        i.fas.fa-exclamation-circle.fa-3x.mb-3
+                        h3 Post not found
+                        p The blog post you're looking for doesn't exist.
+                        a.btn-gradient.mt-3(href="/blog") Return to Blog
+                    
+                    //- back button and content (initially hidden)
+                    div#postContentWrapper(style="display: none;")
+                        .text-center
+                            a.back-button(href="/blog")
+                                i.fas.fa-arrow-left.me-2
+                                | Back to Blog
+
+                        .blog-post-content#postContent
+                            //- markdown content will be rendered here
+
+                        .text-center.mt-5
+                            a.back-button(href="/blog")
+                                i.fas.fa-arrow-left.me-2
+                                | Back to Blog
+    
+    //- include marked.js for markdown parsing
+    script(src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js")
+    
+    script.
+        let currentPost = null;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            const blogPostContainer = document.getElementById('blogPostContainer');
+            const postContentWrapper = document.getElementById('postContentWrapper');
+
+            // get title from URL path
+            const pathParts = window.location.pathname.split('/');
+            const urlTitle = pathParts[pathParts.length - 1];
+
+            if (!urlTitle) {
+                showError();
+                return;
+            }
+
+            // decode the URL-encoded title 
+            const title = decodeURIComponent(urlTitle);
+
+            // show loading (already visible by default)
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+            postContentWrapper.style.display = 'none';
+            blogPostContainer.style.display = 'none';
+
+            // fetch blog post
+            currentPost = await apiGetBlogPost(title);
+
+            // hide loading
+            loadingSpinner.style.display = 'none';
+
+            if (!currentPost) {
+                showError();
+                return;
+            }
+
+            // display blog post
+            displayBlogPost(currentPost);
+        });
+
+        function displayBlogPost(post) {
+            const blogPostContainer = document.getElementById('blogPostContainer');
+            const postContentWrapper = document.getElementById('postContentWrapper');
+            const postTitle = document.getElementById('postTitle');
+            const postDate = document.getElementById('postDate');
+            const postTags = document.getElementById('postTags');
+            const postContent = document.getElementById('postContent');
+
+            // set title
+            postTitle.textContent = post.metadata.title;
+            document.title = post.metadata.title + ' - KS\'s Blog';
+
+            // set date
+            const publishDate = new Date(post.metadata.createdAt);
+            const formattedDate = publishDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            postDate.innerHTML = '<i class="fas fa-calendar me-2"></i>' + formattedDate;
+
+            // set updated date if exists
+            const postUpdatedDate = document.getElementById('postUpdatedDate');
+            const updatedDate = new Date(post.metadata.modifiedAt);
+            const isModified = updatedDate.getTime() !== publishDate.getTime();
+            if (isModified) {
+                const formattedUpdatedDate = updatedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                postUpdatedDate.innerHTML = '<small><i class="fas fa-edit me-2"></i>Modified: ' + formattedUpdatedDate + '</small>';
+                postUpdatedDate.style.display = 'block';
+            }
+            
+            // set tags
+            const tagsHtml = post.metadata.tags.map(tag => 
+                `<span class="post-tag">${tag}</span>`
+            ).join('');
+            postTags.innerHTML = tagsHtml;
+
+            // convert markdown to HTML using marked.js
+            const htmlContent = marked.parse(post.content);
+            postContent.innerHTML = htmlContent;
+
+            // show post
+            blogPostContainer.style.display = 'block';
+            postContentWrapper.style.display = 'block';
+        }
+
+        function showError() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const errorMessage = document.getElementById('errorMessage');
+            const blogPostContainer = document.getElementById('blogPostContainer');
+            const postContentWrapper = document.getElementById('postContentWrapper');
+
+            loadingSpinner.style.display = 'none';
+            blogPostContainer.style.display = 'none';
+            postContentWrapper.style.display = 'none';
+            errorMessage.style.display = 'block';
+        }        
+
+
