@@ -162,7 +162,7 @@ Create a new blog post.
 **cURL Example:**
 ```bash
 curl -X POST http://localhost:8081/blog_api/posts \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "My New Post",
@@ -238,7 +238,7 @@ Update an existing blog post. All fields are optional - only provided fields wil
 Update all fields:
 ```bash
 curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Updated Title",
@@ -251,7 +251,7 @@ curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
 Update only content:
 ```bash
 curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "content": "# Just updating the content"
@@ -261,7 +261,7 @@ curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
 Update only tags:
 ```bash
 curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "tags": ["new-tag", "another-tag"]
@@ -302,7 +302,7 @@ Permanently delete a blog post.
 **cURL Example:**
 ```bash
 curl -X DELETE http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $BLOG_API_KEY"
+  -H "Authorization: Bearer $API_KEY"
 ```
 
 **Error Response (404):**
@@ -336,8 +336,7 @@ Upload a new CV PDF file. File will be saved to `public/cv.pdf`.
 
 **Validation:**
 - File extension must be `.pdf`
-- File must have valid PDF magic bytes (`%PDF`)
-- Maximum file size: 10MB (configurable)
+- Maximum file size: 10MB
 
 **Response:**
 ```json
@@ -351,7 +350,7 @@ Upload a new CV PDF file. File will be saved to `public/cv.pdf`.
 **cURL Example:**
 ```bash
 curl -X POST http://localhost:8081/internal_api/cv \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -F "file=@/path/to/your/cv.pdf"
 ```
 
@@ -410,7 +409,6 @@ Upload a new avatar image. Image will be automatically resized to 512px width (m
 
 **Validation:**
 - File extension must be `.jpg`, `.jpeg`, or `.png`
-- File must have valid image magic bytes (JPEG or PNG)
 - Maximum file size: 5MB (configurable)
 - Image will be resized to 512px width
 
@@ -426,7 +424,7 @@ Upload a new avatar image. Image will be automatically resized to 512px width (m
 **cURL Example:**
 ```bash
 curl -X POST http://localhost:8081/internal_api/avatar \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -F "file=@/path/to/your/photo.jpg"
 ```
 
@@ -524,11 +522,11 @@ File too large:
 
 ```bash
 # Set API key
-export BLOG_API_KEY="your-secret-key"
+export API_KEY="your-secret-key"
 
 # 1. Create a new post
 curl -X POST http://localhost:8081/blog_api/posts \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Getting Started with D",
@@ -545,7 +543,7 @@ curl http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D
 
 # 4. Update the post
 curl -X PUT http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "content": "# Getting Started (Updated)\n\nD is really awesome!",
@@ -554,66 +552,25 @@ curl -X PUT http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D \
 
 # 5. Delete the post
 curl -X DELETE http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D \
-  -H "Authorization: Bearer $BLOG_API_KEY"
+  -H "Authorization: Bearer $API_KEY"
 ```
 
 ### Workflow: Upload CV and Avatar
 
 ```bash
 # Set API key
-export BLOG_API_KEY="your-secret-key"
+export API_KEY="your-secret-key"
 
 # Upload CV
 curl -X POST http://localhost:8081/internal_api/cv \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -F "file=@./documents/my-cv.pdf"
 
 # Upload Avatar
 curl -X POST http://localhost:8081/internal_api/avatar \
-  -H "Authorization: Bearer $BLOG_API_KEY" \
+  -H "Authorization: Bearer $API_KEY" \
   -F "file=@./photos/profile-pic.jpg"
 ```
 
----
 
-## Security Features
 
-### Blog API
-- ✅ Bearer token authentication for write operations
-- ✅ Input validation (required fields)
-- ✅ Duplicate prevention
-- ✅ UTC timestamps
-- ✅ Safe HTML rendering (markdown content)
-
-### Internal API
-- ✅ Bearer token authentication
-- ✅ File type validation (extension + magic bytes)
-- ✅ File size limits
-- ✅ Automatic image resizing
-- ✅ Format conversion to PNG
-
----
-
-## Rate Limits
-
-Currently, no rate limits are enforced. For production deployment, consider implementing:
-- Request rate limiting per IP
-- Upload frequency limits
-- API key-based quotas
-
----
-
-## Notes
-
-- All timestamps are in UTC (ISO 8601 format)
-- Blog post titles are used as unique identifiers
-- Uploaded files overwrite existing files
-- Avatar images are automatically resized to 512px width
-- Avatar images are converted to PNG format
-- Maximum request size: 20MB (configurable in server settings)
-
----
-
-## Support
-
-For issues or questions, contact the API administrator.
