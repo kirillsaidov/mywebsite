@@ -68,7 +68,7 @@ docker-compose down -v
 
 Full API documentation is available in [API.md](API.md).
 
-### Using with Nginx reverse proxy
+## Using with Nginx reverse proxy
 
 Example nginx configuration:
 
@@ -117,6 +117,6 @@ docker exec mywebsite-mongo mongorestore \
   /data/backup
 ```
 
-### LICENSE
+## LICENSE
 MIT.
 
