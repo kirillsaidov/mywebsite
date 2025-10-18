@@ -49,6 +49,12 @@ interface InternalAPI
     @method(HTTPMethod.POST)
     @before!authenticateFileUpload("ctx")
     ResponseStatus postAvatar(FileUploadContext ctx);
+
+    // POST /internal_api/favicon - Upload favicon
+    @path("/favicon")
+    @method(HTTPMethod.POST)
+    @before!authenticateFileUpload("ctx")
+    ResponseStatus postFavicon(FileUploadContext ctx);
 }
 
 class InternalImpl : InternalAPI
@@ -135,6 +141,46 @@ class InternalImpl : InternalAPI
         write(targetPath, imageData);
         
         return ResponseStatus(true, "Avatar updated!");
+    }
+
+    override ResponseStatus postFavicon(FileUploadContext ctx)
+    {
+        // get the current HTTP request from task-local storage
+        auto req = ctx.request;
+        
+        // get the uploaded file
+        auto file = "file" in req.files;
+        if (!file)
+        {
+            return ResponseStatus(false, "No file provided. Use 'file' as the field name.");
+        }
+            
+        // validate file type
+        auto ext = file.filename.name.extension.toLower;
+        if (ext != ".ico")
+        {
+            return ResponseStatus(false, "Invalid file type. Only .ico files are allowed.");
+        }
+
+        // validate file contents
+        auto fileData = validateGetFile(ext, file.tempPath.toString());
+        if (!fileData)
+        {
+            return ResponseStatus(false, "Invalid file. File is not a valid ICO file.");
+        }
+
+        // validate file size
+        if (fileData.length > UploadSizeLimit.favicon)
+        {
+            return ResponseStatus(false,
+                "File too large. Maximum size is %sMB.".format(UploadSizeLimit.favicon / 1_000_000));
+        }
+            
+        // save to disk
+        immutable targetPath = buildPublicPath("favicon.ico");
+        write(targetPath, fileData);
+
+        return ResponseStatus(true, "Favicon updated!");
     }
 }
 
