@@ -177,16 +177,14 @@ class BlogImpl : BlogAPI
         }
         
         // create blog record
-        auto record = BlogPost(
-            BlogMetadata(
-                blogPost.title,
-                blogPost.description,
-                blogPost.tags,
-                Clock.currTime(UTC()),
-                Clock.currTime(UTC())
-            ),
-            blogPost.content
+        auto metadata = BlogMetadata(
+            blogPost.title,
+            blogPost.description,
+            blogPost.tags,
+            Clock.currTime(UTC()),
+            Clock.currTime(UTC())
         );
+        auto record = BlogPost(metadata,blogPost.content);
 
         // get mongo collection
         auto col = getMongoCollection("blog");
@@ -201,7 +199,7 @@ class BlogImpl : BlogAPI
         // save blog post to database
         col.insertOne!BlogPost(record);
         
-        return ResponseStatus(true, "Blog post created successfully!", record.serializeToJson);
+        return ResponseStatus(true, "Blog post created successfully!", metadata.serializeToJson);
     }
 
     override ResponseStatus putPost(string _title, BlogPostRequest blogPost, AuthInfo auth)
