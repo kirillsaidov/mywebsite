@@ -128,10 +128,12 @@ Create a new blog post.
 **Request Body:**
 ```json
 {
-  "title": "My New Post",
-  "description": "A short description",
-  "tags": ["tutorial", "programming"],
-  "content": "# Title\n\nMarkdown content here..."
+  "blogPost": {
+    "title": "My New Post",
+    "description": "A short description",
+    "tags": ["tutorial", "programming"],
+    "content": "# Title\n\nMarkdown content here..."
+  }
 }
 ```
 
@@ -153,8 +155,7 @@ Create a new blog post.
       "tags": ["tutorial", "programming"],
       "createdAt": "2025-01-18T10:30:00Z",
       "modifiedAt": "2025-01-18T10:30:00Z"
-    },
-    "content": "# Title\n\nMarkdown content here..."
+    }
   }
 }
 ```
@@ -165,10 +166,12 @@ curl -X POST http://localhost:8081/blog_api/posts \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "My New Post",
-    "description": "A short description",
-    "tags": ["tutorial", "programming"],
-    "content": "# Title\n\nMarkdown content here..."
+    "blogPost": {
+      "title": "My New Post",
+      "description": "A short description",
+      "tags": ["tutorial", "programming"],
+      "content": "# Title\n\nMarkdown content here..."
+    }
   }'
 ```
 
@@ -206,10 +209,12 @@ Update an existing blog post. All fields are optional - only provided fields wil
 **Request Body (all fields optional):**
 ```json
 {
-  "title": "Updated Title",
-  "description": "Updated description",
-  "tags": ["updated", "tags"],
-  "content": "# Updated\n\nNew content..."
+  "blogPost": {
+    "title": "Updated Title",
+    "description": "Updated description",
+    "tags": ["updated", "tags"],
+    "content": "# Updated\n\nNew content..."
+  }
 }
 ```
 
@@ -241,10 +246,12 @@ curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Updated Title",
-    "description": "Updated description",
-    "tags": ["updated"],
-    "content": "# Updated Content"
+    "blogPost": {
+      "title": "Updated Title",
+      "description": "Updated description",
+      "tags": ["updated"],
+      "content": "# Updated Content"
+    }
   }'
 ```
 
@@ -529,10 +536,12 @@ curl -X POST http://localhost:8081/blog_api/posts \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Getting Started with D",
-    "description": "Learn D programming basics",
-    "tags": ["d-lang", "tutorial", "beginner"],
-    "content": "# Getting Started\n\nD is awesome!"
+    "blogPost": {
+      "title": "Getting Started with D",
+      "description": "Learn D programming basics",
+      "tags": ["d-lang", "tutorial", "beginner"],
+      "content": "# Getting Started\n\nD is awesome!"
+    }
   }'
 
 # 2. Get all posts
@@ -546,8 +555,10 @@ curl -X PUT http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "content": "# Getting Started (Updated)\n\nD is really awesome!",
-    "tags": ["d-lang", "tutorial", "beginner", "updated"]
+    "blogPost": {
+      "content": "# Getting Started (Updated)\n\nD is really awesome!",
+      "tags": ["d-lang", "tutorial", "beginner", "updated"]
+    }
   }'
 
 # 5. Delete the post
