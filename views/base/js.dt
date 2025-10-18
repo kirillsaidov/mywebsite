@@ -77,7 +77,7 @@
 
             const metadata = await response.json();
 
-            // Transform API response to match frontend format
+            // transform API response to match frontend format
             return metadata.map(post => ({
                 title: post.title,
                 description: post.description,
@@ -91,5 +91,26 @@
         }        
     }
 
+    async function apiGetBlogPost(urlTitle) {
+        try {
+            const response = await fetch(`/blog_api/posts/${urlTitle}`);
 
+            if (!response.ok) {
+                console.warn('Blog post not found:', urlTitle);
+                return null;
+            }
 
+            const data = await response.json();
+
+            // check if error response
+            if (data.success === false) {
+                console.warn('Blog post not found:', data.error || urlTitle);
+                return null;
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Error loading blog post:', error);
+            return null;
+        }
+    }
