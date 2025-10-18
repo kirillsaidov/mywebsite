@@ -37,6 +37,7 @@ enum UploadSizeLimit : int
 {
     image = 5_000_000,
     pdf = 5_000_000,
+    favicon = 1_000_000,
 }
 
 /// Get config JSON
