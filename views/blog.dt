@@ -15,6 +15,12 @@ block content
     //- blog content
     section.py-5
         .container
+            //- loading spinner
+            .loading-spinner#loadingSpinner(style="display: none;")
+                .spinner-border.text-primary(role="status")
+                    span.visually-hidden Loading...
+                p.mt-3 Loading blog posts...
+
             //- group blog posts by year
             div(id="blogContainer")
                 //- content will be populated by javascript
@@ -30,11 +36,22 @@ block content
         let allBlogPosts = [];
         let filteredPosts = [];
         
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const blogContainer = document.getElementById('blogContainer');
+        
+            // show loading spinner
+            loadingSpinner.style.display = 'block';
+            blogContainer.style.display = 'none';
+
             // load blog data
-            allBlogPosts = getBlogMetadata(); // this function returns a list by querying my API
+            allBlogPosts = await apiGetBlogMetadata();
             filteredPosts = allBlogPosts;
-            
+
+            // hide loading spinner
+            loadingSpinner.style.display = 'none';
+            blogContainer.style.display = 'block';
+
             // display posts
             displayBlogPosts(filteredPosts);
             
@@ -58,8 +75,25 @@ block content
             if (posts.length === 0) {
                 container.innerHTML = '';
                 noResults.style.display = 'block';
+
+                // handle case when there are no blog posts
+                if (allBlogPosts.length === 0) {
+                    // No posts in database at all
+                    noResults.innerHTML = `
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <h3>No blog posts yet</h3>
+                        <p>Check back soon for new content!</p>
+                    `;
+                } else {
+                    // Posts exist but search returned nothing
+                    noResults.innerHTML = `
+                        <i class="fas fa-search fa-3x mb-3"></i>
+                        <h3>No articles found</h3>
+                        <p>Try adjusting your search terms</p>
+                    `;
+                }
                 return;
-            }
+            } 
             noResults.style.display = 'none';
             
             // group posts by year
@@ -127,62 +161,5 @@ block content
             window.location.href = `/blog/${urlTitle}`;
         }
 
-        function getBlogMetadata() {
-            // TODO: query API
-            // This function will be replaced with actual API call later
-            // For now, returning hardcoded example data
-            return [
-                {
-                    title: "Building a Modern Web Application with D and Vibe.d",
-                    description: "A comprehensive guide to creating scalable web applications using the D programming language and the Vibe.d framework. Learn about routing, templates, and database integration.",
-                    created_at: "2024-12-15T10:30:00Z",
-                    modified_at: "2024-12-16T14:20:00Z",
-                    tags: ["d-lang", "vibe-d", "web-development", "backend", "tutorial"]
-                },
-                {
-                    title: "Game Development with D: Creating a 2D RPG",
-                    description: "Exploring the world of game development using D programming language. This post covers sprite handling, collision detection, and basic game mechanics for a 2D RPG.",
-                    created_at: "2024-11-08T09:15:00Z",
-                    modified_at: "2024-11-10T16:45:00Z",
-                    tags: ["game", "gamedev", "2d", "rpg", "d-lang", "graphics"]
-                },
-                {
-                    title: "Understanding Memory Management in D",
-                    description: "Deep dive into D's memory management features including garbage collection, manual memory management, and best practices for performance-critical applications.",
-                    created_at: "2024-10-22T14:00:00Z",
-                    modified_at: "2024-10-23T11:30:00Z",
-                    tags: ["d-lang", "memory-management", "performance", "systems-programming"]
-                },
-                {
-                    title: "Migrating from C++ to D: A Developer's Journey",
-                    description: "Personal experience and lessons learned while transitioning from C++ to D programming language. Comparing syntax, features, and development workflow.",
-                    created_at: "2024-09-05T08:45:00Z",
-                    modified_at: "2024-09-06T10:15:00Z",
-                    tags: ["d-lang", "cpp", "migration", "comparison", "experience"]
-                },
-                {
-                    title: "Implementing REST APIs with Vibe.d",
-                    description: "Step-by-step tutorial on building RESTful web services using Vibe.d. Covers JSON handling, authentication, middleware, and testing strategies.",
-                    created_at: "2024-08-18T13:20:00Z",
-                    modified_at: "2024-08-19T09:10:00Z",
-                    tags: ["vibe-d", "rest-api", "web-services", "json", "authentication"]
-                },
-                {
-                    title: "Introduction to Diet Templates",
-                    description: "Getting started with Diet templates in Vibe.d for creating dynamic web pages. Learn the syntax, features, and best practices for maintainable templates.",
-                    created_at: "2023-12-03T16:30:00Z",
-                    modified_at: "2023-12-04T12:00:00Z",
-                    tags: ["vibe-d", "diet-templates", "frontend", "templating", "web-development"]
-                },
-                {
-                    title: "D Language: Why It Deserves Your Attention",
-                    description: "An overview of the D programming language, its unique features, and why it's worth considering for your next project. Comparing D with other modern languages.",
-                    created_at: "2023-10-15T11:00:00Z",
-                    modified_at: "2023-10-16T15:30:00Z",
-                    tags: ["d-lang", "programming-languages", "overview", "features"]
-                }
-            ];
-        }
-        
 
 
