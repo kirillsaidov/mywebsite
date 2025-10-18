@@ -111,12 +111,21 @@ block content
                 
                 postsByYear[year].forEach(post => {
                     const publishDate = new Date(post.created_at);
+                    const updatedDate = new Date(post.modified_at);
                     const formattedDate = publishDate.toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                     });
-                    
+
+                    // check if blog post was modified
+                    const isModified = updatedDate && updatedDate.getTime() !== publishDate.getTime();
+                    const formattedUpdatedDate = isModified ? updatedDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }) : "";
+                                        
                     const tagsHtml = post.tags.map(tag => 
                         `<span class="blog-tag">${tag}</span>`
                     ).join('');
@@ -129,6 +138,7 @@ block content
                                 <div class="blog-date">
                                     <i class="fas fa-calendar me-1"></i>
                                     ${formattedDate}
+                                    ${isModified ? `<br><small class="text-muted"><i class="fas fa-edit me-1"></i>Modified: ${formattedUpdatedDate}</small>` : ''}
                                 </div>
                                 <div class="blog-tags">
                                     ${tagsHtml}
@@ -157,7 +167,7 @@ block content
         
         function navigateToPost(title) {
             // convert title to URL-friendly format
-            const urlTitle = titleToURLFriendlyFormat(title);
+            const urlTitle = encodeURIComponent(title);
             window.location.href = `/blog/${urlTitle}`;
         }
 
