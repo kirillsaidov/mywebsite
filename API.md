@@ -18,6 +18,7 @@ The file documents all API endpoints of this project.
 - [Internal API](#internal-api)
   - [Upload CV](#upload-cv)
   - [Upload Avatar](#upload-avatar)
+  - [Upload Favicon](#upload-favicon)
 - [Error Responses](#error-responses)
 
 ---
@@ -475,6 +476,79 @@ File too large:
 
 ---
 
+### Upload Favicon
+
+Upload a new favicon ICO file. File will be saved to `public/favicon.ico`.
+
+**Endpoint:** `POST /internal_api/favicon`
+
+**Authentication:** Required
+
+**Content-Type:** `multipart/form-data`
+
+**Form Fields:**
+- `file` - The ICO file to upload
+
+**Validation:**
+- File extension must be `.ico`
+- Maximum file size: 1MB
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Favicon updated!",
+  "data": {}
+}
+```
+
+**cURL Example:**
+```bash
+curl -X POST http://localhost:8081/internal_api/favicon \
+  -H "Authorization: Bearer $API_KEY" \
+  -F "file=@/path/to/your/favicon.ico"
+```
+
+**Error Responses:**
+
+Missing file:
+```json
+{
+  "success": false,
+  "message": "No file provided. Use 'file' as the field name.",
+  "data": {}
+}
+```
+
+Invalid file type:
+```json
+{
+  "success": false,
+  "message": "Invalid file type. Only .ico files are allowed.",
+  "data": {}
+}
+```
+
+Invalid ICO (magic bytes check):
+```json
+{
+  "success": false,
+  "message": "Invalid file. File is not a valid ICO file.",
+  "data": {}
+}
+```
+
+File too large:
+```json
+{
+  "success": false,
+  "message": "File too large. Maximum size is 1MB.",
+  "data": {}
+}
+```
+
+---
+
 ## Error Responses
 
 ### Authentication Errors
@@ -566,8 +640,7 @@ curl -X DELETE http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D
   -H "Authorization: Bearer $API_KEY"
 ```
 
-### Workflow: Upload CV and Avatar
-
+### Workflow: Upload CV, Avatar, and Favicon
 ```bash
 # Set API key
 export API_KEY="your-secret-key"
@@ -581,6 +654,11 @@ curl -X POST http://localhost:8081/internal_api/cv \
 curl -X POST http://localhost:8081/internal_api/avatar \
   -H "Authorization: Bearer $API_KEY" \
   -F "file=@./photos/profile-pic.jpg"
+
+# Upload Favicon
+curl -X POST http://localhost:8081/internal_api/favicon \
+  -H "Authorization: Bearer $API_KEY" \
+  -F "file=@./images/favicon.ico"
 ```
 
 
