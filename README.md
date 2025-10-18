@@ -1,26 +1,120 @@
-# My website
-This repo contains code of my personal website. It is written in `D` programming language + `Vibe.d` framework.
+# My Website
 
-## Run manually
-If you plan to run manually, then install:
-* [D programming language compiler](https://dlang.org/)
-* DUB package manager (bundled with the D compiler)
+A personal website built with D (vibe.d framework).
 
-Clone this repository and execute:
-```sh
-cd mywebsite/
-dub run
-```
-Output
-```sh
-Listening for requests on http://[::1]:8080/
-Listening for requests on http://127.0.0.1:8080/
+## Tech Stack
+
+- **Backend**: [D language](https://dlang.org/) with [vibe.d](https://github.com/vibe-d/vibe.d) framework
+- **Database**: MongoDB
+- **Frontend**: HTML, CSS (Bootstrap), JavaScript
+- **Template Engine**: Diet templates
+- **Deployment**: Docker & Docker Compose
+
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/kirillsaidov/mywebsite
+cd mywebsite
 ```
 
-## Run with Docker
+### 2. Configure environment variables
+
+Copy the example environment file and configure it:
+
+```bash
+cp .env.example .env
 ```
-# build && run in background
-docker run -d --network=host -v $PWD:/app -v $HOME/.dub:/app/.dub -w /app kirillsaidov/dlang:dmd-latest dub run
+
+Edit `.env` with your settings:
+
+```env
+# API Configuration
+API_KEY=your-secret-api-key-here
+
+# Web Server Configuration
+BIND_PORT=8081
+BIND_ADDRESS=0.0.0.0
+
+# MongoDB Configuration
+MONGO_PORT=27018
+MONGO_URI=mongodb://admin:password@mongo:27017/mywebsite?authSource=admin
+MONGO_ROOT_USERNAME=admin
+MONGO_ROOT_PASSWORD=change-this-password
+MONGO_DB_NAME=mywebsite
+```
+
+### 3. Deploy with Docker Compose
+
+```bash
+# build and start all services
+docker-compose up -d
+
+# view logs
+docker-compose logs -f
+
+# check status
+docker-compose ps
+
+# stop services
+docker-compose down
+
+# stop and remove volumes (deletes database data)
+docker-compose down -v
+```
+
+## API Documentation
+
+Full API documentation is available in [API.md](API.md).
+
+### Using with Nginx reverse proxy
+
+Example nginx configuration:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:8081;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## Database Backup
+
+### Backup MongoDB
+
+```bash
+# Create backup
+docker exec mywebsite-mongo mongodump \
+  --username admin \
+  --password your-password \
+  --authenticationDatabase admin \
+  --out /data/backup
+
+# Copy backup to host
+docker cp mywebsite-mongo:/data/backup ./mongodb-backup
+```
+
+### Restore MongoDB
+
+```bash
+# Copy backup to container
+docker cp ./mongodb-backup mywebsite-mongo:/data/backup
+
+# Restore
+docker exec mywebsite-mongo mongorestore \
+  --username admin \
+  --password your-password \
+  --authenticationDatabase admin \
+  /data/backup
 ```
 
 ### LICENSE
