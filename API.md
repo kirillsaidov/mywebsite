@@ -382,7 +382,7 @@ Invalid file type:
 }
 ```
 
-Invalid PDF (magic bytes check):
+Invalid PDF:
 ```json
 {
   "success": false,
@@ -456,7 +456,7 @@ Invalid file type:
 }
 ```
 
-Invalid image (magic bytes check):
+Invalid image:
 ```json
 {
   "success": false,
@@ -529,7 +529,7 @@ Invalid file type:
 }
 ```
 
-Invalid ICO (magic bytes check):
+Invalid ICO:
 ```json
 {
   "success": false,
