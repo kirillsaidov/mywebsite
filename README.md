@@ -62,6 +62,9 @@ docker compose down
 
 # stop and remove volumes (deletes database data)
 docker compose down -v
+
+# rebuild app and deploy automatically
+docker compose up -d mywebsite --build
 ```
 
 ## API Documentation
