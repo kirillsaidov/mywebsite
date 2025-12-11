@@ -9,15 +9,13 @@ block content
                     .profile-card.text-center.text-lg-start
                         .row.align-items-center
                             .col-lg-4.mb-4.mb-lg-0
-                                img.profile-image.mx-auto.d-block#avatar(src="#", alt="Profile Photo")
+                                img.profile-image.mx-auto.d-block#avatar(src="", alt="Profile Photo")
                             .col-lg-8
                                 .container
                                     h1.text-white.mb-3.animated-text
                                         | Hello, I'm 
-                                        span.text-gradient #{about.name}
-                                    p.text-white.mb-4.animated-text
-                                        - foreach (p; about.bio)
-                                            p.text-white.mb-4.animated-text #{p}
+                                        span.text-gradient#aboutName
+                                    div#aboutBio
                                     .d-flex.flex-column.flex-sm-row.gap-3.justify-content-center.justify-content-lg-start
                                         a.btn-gradient(href="/cv")
                                             i.fas.fa-eye.me-2
@@ -28,26 +26,50 @@ block content
                 .col-lg-6
                     .social-links.text-center.mt-5.mt-lg-0
                         h3.text-white.mb-4 Connect with me
-                        a(href="#{about.linkedin}", target="_blank", title="LinkedIn")
+                        a(href="", target="_blank", title="LinkedIn", id="linkedin-link")
                             i.fab.fa-linkedin-in
-                        a(href="#{about.github_ks}", target="_blank", title="GitHub")
+                        a(href="", target="_blank", title="GitHub", id="github_ks-link")
                             i.fab.fa-github
-                        a(href="#{about.github_rk}", target="_blank", title="GitHub")
+                        a(href="", target="_blank", title="GitHub", id="github_rk-link")
                             i.fab.fa-github
-                        a(href="#", title="Email", id="email-link")
+                        a(href="", title="Email", id="email-link")
                             i.fas.fa-envelope
     
     script.
         //- Page init
-        document.addEventListener('DOMContentLoaded', function() {
-            //- Set download link
+        document.addEventListener('DOMContentLoaded', async function() {
+            //- Get about section information
+            const info = await apiGetAboutInfo();
+            if (!info) {
+               console.error('Failed to load about info!');
+               return;
+            }
+
+            //- Set avatar
             document.getElementById('avatar').src = apiGetPublicItemPathAvatar();
+
+            //- Set about name
+            document.getElementById('aboutName').textContent = info['name'];
+
+            //- Set bio paragraphs
+            const bioContainer = document.getElementById('aboutBio');
+            info.bio.forEach(paragraph => {
+                const p = document.createElement('p');
+                p.className = 'text-white mb-4 animated-text';
+                p.textContent = paragraph;
+                bioContainer.appendChild(p);
+            });            
+
+            //- Set social links
+            document.getElementById('linkedin-link').href = info['social']['linkedin'];
+            document.getElementById('github_ks-link').href = info['social']['github_ks'];
+            document.getElementById('github_rk-link').href = info['social']['github_rk'];
             
             //- Set email
             document.getElementById('email-link').addEventListener('click', function(e) {
                 e.preventDefault();
-                const user = '#{about.email_user}';
-                const domain = '#{about.email_domain}';
+                const user = info['social']['email-user'];
+                const domain = info['social']['email-domain'];
                 window.location.href = 'mailto:' + user + '@' + domain;
             });
         });
