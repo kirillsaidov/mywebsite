@@ -15,6 +15,7 @@ The file documents all API endpoints of this project.
   - [Create Blog Post](#create-blog-post)
   - [Update Blog Post](#update-blog-post)
   - [Delete Blog Post](#delete-blog-post)
+- [Public API] (#public-api)
 - [Internal API](#internal-api)
   - [Upload CV](#upload-cv)
   - [Upload Avatar](#upload-avatar)
@@ -323,6 +324,47 @@ curl -X DELETE http://localhost:8081/blog_api/posts/My%20New%20Post \
 
 ---
 
+## Public API
+
+Base path: `/public_api`
+
+These endpoints handle open information that can be requested from server.
+
+### Get About Info
+
+Request about information and social links.
+
+**Endpoint:** `GET /public_api/about`
+
+**Authentication:** None required
+
+**Content-Type:** `application/json`
+
+**Response:**
+```json
+{
+    "name": "Name",
+    "bio": [
+        "...",
+        "..."
+    ],
+    "social": {
+        "email-user": "user.name",
+        "email-domain": "gmail.com",
+        "linkedin": "https://linkedin.com/in/username",
+        "github_ks": "https://github.com/username",
+        "github_rk": "https://github.com/username2",
+        "youtube": "https://www.youtube.com/@username"
+    }
+}
+```
+
+**cURL Example:**
+```bash
+curl -X GET http://localhost:8081/public_api/about
+```
+
+---
 ## Internal API
 
 Base path: `/internal_api`
