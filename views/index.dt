@@ -32,6 +32,8 @@ block content
                             i.fab.fa-github
                         a(href="", target="_blank", title="GitHub", id="github_rk-link")
                             i.fab.fa-github
+                        a(href="", target="_blank", title="YouTube", id="youtube-link")
+                            i.fab.fa-youtube
                         a(href="", title="Email", id="email-link")
                             i.fas.fa-envelope
     
@@ -64,6 +66,7 @@ block content
             document.getElementById('linkedin-link').href = info['social']['linkedin'];
             document.getElementById('github_ks-link').href = info['social']['github_ks'];
             document.getElementById('github_rk-link').href = info['social']['github_rk'];
+            document.getElementById('youtube-link').href = info['social']['youtube'];
             
             //- Set email
             document.getElementById('email-link').addEventListener('click', function(e) {
