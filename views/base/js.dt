@@ -72,7 +72,7 @@
             const response = await fetch('/blog_api/posts');
 
             if (!response.ok) {
-                throw new Error('Failed to fetch blog posts');
+                throw new Error('Failed to fetch blog posts!');
             }
 
             const metadata = await response.json();
@@ -114,3 +114,23 @@
             return null;
         }
     }
+
+    async function apiGetAboutInfo() {
+        try {
+            const response = await fetch('/public_api/about');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch about info!');
+                return [];
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Failed to fetch about info:', error);
+            return null;
+        }
+    }
+
+
+
