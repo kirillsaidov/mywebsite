@@ -15,7 +15,7 @@ The file documents all API endpoints of this project.
   - [Create Blog Post](#create-blog-post)
   - [Update Blog Post](#update-blog-post)
   - [Delete Blog Post](#delete-blog-post)
-- [Public API] (#public-api)
+- [Public API](#public-api)
 - [Internal API](#internal-api)
   - [Upload CV](#upload-cv)
   - [Upload Avatar](#upload-avatar)
