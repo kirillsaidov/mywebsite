@@ -41,6 +41,7 @@ void main()
 
     // add REST API
     router.registerRestInterface(new api.BlogImpl(), restSettings);
+    router.registerRestInterface(new api.PublicImpl(), restSettings);
     router.registerRestInterface(new api.InternalImpl(), restSettings);
 
     // init listener
