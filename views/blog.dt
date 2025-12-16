@@ -153,9 +153,9 @@ block content
             
             container.innerHTML = html;
         }
-        
+                
         function groupPostsByYear(posts) {
-            return posts.reduce((grouped, post) => {
+            const grouped = posts.reduce((grouped, post) => {
                 const year = new Date(post.created_at).getFullYear();
                 if (!grouped[year]) {
                     grouped[year] = [];
@@ -163,8 +163,15 @@ block content
                 grouped[year].push(post);
                 return grouped;
             }, {});
+
+            // Sort posts within each year (latest first)
+            for (const year in grouped) {
+                grouped[year].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+
+            return grouped;
         }
-        
+
         function navigateToPost(title) {
             // convert title to URL-friendly format
             const urlTitle = encodeURIComponent(title);
