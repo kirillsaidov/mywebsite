@@ -26,6 +26,10 @@ while [[ $# -gt 0 ]]; do
       TAGS="$2"
       shift 2
       ;;
+    --api_key)
+      API_KEY="$2"
+      shift 2
+      ;;
     --url)
       API_URL="$2"
       shift 2
@@ -38,7 +42,8 @@ while [[ $# -gt 0 ]]; do
       echo "  --title        Blog post title (required)"
       echo "  --description  Blog post description (required)"
       echo "  --tags         Comma-separated tags (required)"
-      echo "  --url          API URL (default: http://localhost:8081/blog_api/posts)"
+      echo "  --api_key      API key (required)"
+      echo "  --url          API URL (default: $API_URL)"
       echo "  -h, --help     Show this help message"
       echo ""
       echo "Environment variables:"
@@ -96,6 +101,9 @@ TAGS_JSON=$(printf '%s\n' "${TAG_ARRAY[@]}" | jq -R . | jq -s .)
 
 # Read content and create JSON payload
 CONTENT=$(cat "$FILE")
+
+# Remove trailing slash from API_URL
+API_URL="${API_URL%/}"
 
 echo "Creating blog post..."
 echo -e "  Title:       $TITLE"
