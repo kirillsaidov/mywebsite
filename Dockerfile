@@ -12,8 +12,8 @@ RUN apt update && apt upgrade -y && \
 WORKDIR /app
 
 # copy backend source
-COPY mywebsite/source/ source/
-COPY mywebsite/dub.sdl dub.sdl
+COPY source/ source/
+COPY dub.sdl dub.sdl
 
 # fetch dependencies
 RUN dub fetch
