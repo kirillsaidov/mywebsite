@@ -11,10 +11,9 @@ RUN apt update && apt upgrade -y && \
 # set working directory
 WORKDIR /app
 
-# copy files
-COPY source/ source/
-COPY views/ views/
-COPY dub.sdl dub.sdl
+# copy backend source
+COPY mywebsite/source/ source/
+COPY mywebsite/dub.sdl dub.sdl
 
 # fetch dependencies
 RUN dub fetch
@@ -24,6 +23,3 @@ RUN dub build --build=release --compiler=ldc2
 
 # run the application
 CMD ["./bin/mywebsite"]
-
-
-

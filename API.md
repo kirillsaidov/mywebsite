@@ -2,13 +2,22 @@
 
 ## Overview
 
-The file documents all API endpoints of this project.
+This documents all API endpoints. Authentication uses JWT tokens obtained via the login endpoint.
 
 ---
 
 ## Table of Contents
 
 - [Authentication](#authentication)
+- [Auth API](#auth-api)
+  - [Login](#login)
+- [Admin API](#admin-api)
+  - [Change Password](#change-password)
+  - [Update About Info](#update-about-info)
+  - [List All Banners](#list-all-banners)
+  - [Create Banner](#create-banner)
+  - [Update Banner](#update-banner)
+  - [Delete Banner](#delete-banner)
 - [Blog API](#blog-api)
   - [Get All Blog Metadata](#get-all-blog-metadata)
   - [Get Specific Blog Post](#get-specific-blog-post)
@@ -17,6 +26,7 @@ The file documents all API endpoints of this project.
   - [Delete Blog Post](#delete-blog-post)
 - [Public API](#public-api)
   - [Get About Info](#get-about-info)
+  - [Get Active Banners](#get-active-banners)
 - [Internal API](#internal-api)
   - [Upload CV](#upload-cv)
   - [Upload Avatar](#upload-avatar)
@@ -27,17 +37,176 @@ The file documents all API endpoints of this project.
 
 ## Authentication
 
-Protected endpoints require authentication via the `Authorization` header:
+Protected endpoints require a JWT token obtained from the login endpoint:
 
 ```
-Authorization: Bearer your-api-key-here
+Authorization: Bearer <jwt-token>
 ```
 
-Set your API key as an environment variable:
+Tokens expire after 24 hours.
 
+**Environment variables:**
+- `ADMIN_USERNAME` — admin username (default: `admin`)
+- `ADMIN_PASSWORD` — admin password (default: `changeme`)
+- `JWT_SECRET` — JWT signing secret (auto-generated if unset)
+
+---
+
+## Auth API
+
+Base path: `/auth_api`
+
+### Login
+
+Authenticate and receive a JWT token.
+
+**Endpoint:** `POST /auth_api/login`
+
+**Authentication:** None
+
+**Request Body:**
+```json
+{
+  "loginRequest": {
+    "username": "admin",
+    "password": "changeme"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful.",
+  "data": {
+    "token": "eyJ..."
+  }
+}
+```
+
+**cURL Example:**
 ```bash
-export API_KEY="your-secret-api-key"
+curl -X POST http://localhost:8081/auth_api/login \
+  -H "Content-Type: application/json" \
+  -d '{"loginRequest": {"username": "admin", "password": "changeme"}}'
 ```
+
+---
+
+## Admin API
+
+Base path: `/admin_api`
+
+All admin endpoints require JWT authentication.
+
+### Change Password
+
+**Endpoint:** `POST /admin_api/password`
+
+**Request Body:**
+```json
+{
+  "passwordChangeRequest": {
+    "currentPassword": "changeme",
+    "newPassword": "newsecurepassword"
+  }
+}
+```
+
+**cURL Example:**
+```bash
+curl -X POST http://localhost:8081/admin_api/password \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"passwordChangeRequest": {"currentPassword": "changeme", "newPassword": "newsecurepassword"}}'
+```
+
+---
+
+### Update About Info
+
+**Endpoint:** `PUT /admin_api/about`
+
+**Request Body:**
+```json
+{
+  "aboutRequest": {
+    "name": "Kirill Saidov",
+    "bio": ["First paragraph.", "Second paragraph."],
+    "social": {
+      "email-user": "user",
+      "email-domain": "gmail.com",
+      "linkedin": "https://linkedin.com/in/username",
+      "github_ks": "https://github.com/username",
+      "github_rk": "https://github.com/username2",
+      "youtube": "https://youtube.com/@channel"
+    }
+  }
+}
+```
+
+**cURL Example:**
+```bash
+curl -X PUT http://localhost:8081/admin_api/about \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"aboutRequest": {"name": "Kirill Saidov", "bio": ["Bio paragraph."]}}'
+```
+
+---
+
+### List All Banners
+
+**Endpoint:** `GET /admin_api/banners`
+
+**Response:**
+```json
+[
+  {
+    "id": "...",
+    "message": "Site maintenance tonight",
+    "type": "warning",
+    "startDate": "2025-01-01T00:00:00Z",
+    "endDate": "2025-01-02T00:00:00Z",
+    "active": true,
+    "createdAt": "2024-12-30T10:00:00Z"
+  }
+]
+```
+
+---
+
+### Create Banner
+
+**Endpoint:** `POST /admin_api/banners`
+
+**Request Body:**
+```json
+{
+  "bannerRequest": {
+    "message": "Welcome to the new site!",
+    "type": "info",
+    "startDate": "2025-01-01T00:00:00Z",
+    "endDate": "2025-12-31T23:59:59Z",
+    "active": true
+  }
+}
+```
+
+---
+
+### Update Banner
+
+**Endpoint:** `PUT /admin_api/banners/:id`
+
+**Request Body:** Same as create (all fields optional).
+
+---
+
+### Delete Banner
+
+**Endpoint:** `DELETE /admin_api/banners/:id`
 
 ---
 
@@ -47,33 +216,9 @@ Base path: `/blog_api`
 
 ### Get All Blog Metadata
 
-Retrieve metadata for all blog posts (without content).
-
 **Endpoint:** `GET /blog_api/posts`
+**Authentication:** None
 
-**Authentication:** None required
-
-**Response:**
-```json
-[
-  {
-    "title": "My First Post",
-    "description": "This is my first blog post",
-    "tags": ["tutorial", "d-lang"],
-    "createdAt": "2025-01-15T10:30:00Z",
-    "modifiedAt": "2025-01-15T10:30:00Z"
-  },
-  {
-    "title": "Another Post",
-    "description": "My second post",
-    "tags": ["programming"],
-    "createdAt": "2025-01-16T14:20:00Z",
-    "modifiedAt": "2025-01-17T09:15:00Z"
-  }
-]
-```
-
-**cURL Example:**
 ```bash
 curl http://localhost:8081/blog_api/posts
 ```
@@ -82,245 +227,58 @@ curl http://localhost:8081/blog_api/posts
 
 ### Get Specific Blog Post
 
-Retrieve a complete blog post including content.
-
 **Endpoint:** `GET /blog_api/posts/:title`
+**Authentication:** None
 
-**Authentication:** None required
-
-**Parameters:**
-- `title` (path parameter) - The exact title of the blog post
-
-**Response:**
-```json
-{
-  "metadata": {
-    "title": "My First Post",
-    "description": "This is my first blog post",
-    "tags": ["tutorial", "d-lang"],
-    "createdAt": "2025-01-15T10:30:00Z",
-    "modifiedAt": "2025-01-15T10:30:00Z"
-  },
-  "content": "# Hello World\n\nThis is the **markdown** content of my post."
-}
-```
-
-**cURL Example:**
 ```bash
 curl http://localhost:8081/blog_api/posts/My%20First%20Post
-```
-
-**Error Response (404):**
-```json
-{
-  "statusMessage": "Blog post not found: My First Post",
-  "statusCode": 404
-}
 ```
 
 ---
 
 ### Create Blog Post
 
-Create a new blog post.
-
 **Endpoint:** `POST /blog_api/posts`
-
 **Authentication:** Required
 
-**Request Body:**
-```json
-{
-  "blogPost": {
-    "title": "My New Post",
-    "description": "A short description",
-    "tags": ["tutorial", "programming"],
-    "content": "# Title\n\nMarkdown content here..."
-  }
-}
-```
-
-**Required Fields:**
-- `title` (string) - Post title
-- `description` (string) - Short description
-- `tags` (array of strings) - List of tags
-- `content` (string) - Markdown content
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Blog post created successfully!",
-  "data": {
-    "metadata": {
-      "title": "My New Post",
-      "description": "A short description",
-      "tags": ["tutorial", "programming"],
-      "createdAt": "2025-01-18T10:30:00Z",
-      "modifiedAt": "2025-01-18T10:30:00Z"
-    }
-  }
-}
-```
-
-**cURL Example:**
 ```bash
 curl -X POST http://localhost:8081/blog_api/posts \
-  -H "Authorization: Bearer $API_KEY" \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "blogPost": {
       "title": "My New Post",
       "description": "A short description",
-      "tags": ["tutorial", "programming"],
-      "content": "# Title\n\nMarkdown content here..."
+      "tags": ["tutorial"],
+      "content": "# Title\n\nContent here..."
     }
   }'
-```
-
-**Error Response (Missing Fields):**
-```json
-{
-  "success": false,
-  "message": "All fields (title, description, tags, content) are required when creating a post!",
-  "data": {}
-}
-```
-
-**Error Response (Duplicate):**
-```json
-{
-  "success": false,
-  "message": "Blog post already exists!",
-  "data": {}
-}
 ```
 
 ---
 
 ### Update Blog Post
 
-Update an existing blog post. All fields are optional - only provided fields will be updated.
-
 **Endpoint:** `PUT /blog_api/posts/:title`
-
 **Authentication:** Required
 
-**Parameters:**
-- `title` (path parameter) - The exact title of the post to update
-
-**Request Body (all fields optional):**
-```json
-{
-  "blogPost": {
-    "title": "Updated Title",
-    "description": "Updated description",
-    "tags": ["updated", "tags"],
-    "content": "# Updated\n\nNew content..."
-  }
-}
-```
-
-**Note:** You can send only the fields you want to update. Omitted fields will keep their existing values.
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Blog post updated successfully!",
-  "data": {
-    "metadata": {
-      "title": "Updated Title",
-      "description": "Updated description",
-      "tags": ["updated", "tags"],
-      "createdAt": "2025-01-15T10:30:00Z",
-      "modifiedAt": "2025-01-18T15:45:00Z"
-    },
-    "content": "# Updated\n\nNew content..."
-  }
-}
-```
-
-**cURL Examples:**
-
-Update all fields:
 ```bash
 curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $API_KEY" \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{
-    "blogPost": {
-      "title": "Updated Title",
-      "description": "Updated description",
-      "tags": ["updated"],
-      "content": "# Updated Content"
-    }
-  }'
-```
-
-Update only content:
-```bash
-curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "content": "# Just updating the content"
-  }'
-```
-
-Update only tags:
-```bash
-curl -X PUT http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tags": ["new-tag", "another-tag"]
-  }'
-```
-
-**Error Response (Not Found):**
-```json
-{
-  "success": false,
-  "message": "Blog post not found: My New Post",
-  "data": {}
-}
+  -d '{"blogPost": {"content": "# Updated Content"}}'
 ```
 
 ---
 
 ### Delete Blog Post
 
-Permanently delete a blog post.
-
 **Endpoint:** `DELETE /blog_api/posts/:title`
-
 **Authentication:** Required
 
-**Parameters:**
-- `title` (path parameter) - The exact title of the post to delete
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Blog post deleted successfully!",
-  "data": {}
-}
-```
-
-**cURL Example:**
 ```bash
 curl -X DELETE http://localhost:8081/blog_api/posts/My%20New%20Post \
-  -H "Authorization: Bearer $API_KEY"
-```
-
-**Error Response (404):**
-```json
-{
-  "statusMessage": "Blog post not found: My New Post",
-  "statusCode": 404
-}
+  -H "Authorization: Bearer $TOKEN"
 ```
 
 ---
@@ -329,380 +287,109 @@ curl -X DELETE http://localhost:8081/blog_api/posts/My%20New%20Post \
 
 Base path: `/public_api`
 
-These endpoints handle open information that can be requested from server.
-
 ### Get About Info
 
-Request about information and social links.
-
 **Endpoint:** `GET /public_api/about`
+**Authentication:** None
 
-**Authentication:** None required
+Returns about info from MongoDB (seeded from `config/config.json` on first startup).
 
-**Content-Type:** `application/json`
-
-**Response:**
-```json
-{
-    "name": "Name",
-    "bio": [
-        "...",
-        "..."
-    ],
-    "social": {
-        "email-user": "user.name",
-        "email-domain": "gmail.com",
-        "linkedin": "https://linkedin.com/in/username",
-        "github_ks": "https://github.com/username",
-        "github_rk": "https://github.com/username2",
-        "youtube": "https://www.youtube.com/@username"
-    }
-}
-```
-
-**cURL Example:**
 ```bash
-curl -X GET http://localhost:8081/public_api/about
+curl http://localhost:8081/public_api/about
 ```
 
 ---
+
+### Get Active Banners
+
+**Endpoint:** `GET /public_api/banners`
+**Authentication:** None
+
+Returns banners where `active=true` and current time is within start/end date range.
+
+```bash
+curl http://localhost:8081/public_api/banners
+```
+
+---
+
 ## Internal API
 
 Base path: `/internal_api`
 
-These endpoints handle file uploads for CV and avatar.
+All internal endpoints require JWT authentication.
 
 ### Upload CV
 
-Upload a new CV PDF file. File will be saved to `public/cv.pdf`.
-
 **Endpoint:** `POST /internal_api/cv`
 
-**Authentication:** Required
-
-**Content-Type:** `multipart/form-data`
-
-**Form Fields:**
-- `file` - The PDF file to upload
-
-**Validation:**
-- File extension must be `.pdf`
-- Maximum file size: 10MB
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "CV updated!",
-  "data": {}
-}
-```
-
-**cURL Example:**
 ```bash
 curl -X POST http://localhost:8081/internal_api/cv \
-  -H "Authorization: Bearer $API_KEY" \
-  -F "file=@/path/to/your/cv.pdf"
-```
-
-**Error Responses:**
-
-Missing file:
-```json
-{
-  "success": false,
-  "message": "No file provided. Use 'file' as the field name.",
-  "data": {}
-}
-```
-
-Invalid file type:
-```json
-{
-  "success": false,
-  "message": "Invalid file type. Only PDF files are allowed.",
-  "data": {}
-}
-```
-
-Invalid PDF:
-```json
-{
-  "success": false,
-  "message": "Invalid file. File is not a valid PDF.",
-  "data": {}
-}
-```
-
-File too large:
-```json
-{
-  "success": false,
-  "message": "File too large. Maximum size is 10MB.",
-  "data": {}
-}
+  -H "Authorization: Bearer $TOKEN" \
+  -F "file=@/path/to/cv.pdf"
 ```
 
 ---
 
 ### Upload Avatar
 
-Upload a new avatar image. Image will be automatically resized to 512px width (maintaining aspect ratio) and saved as `public/avatar.png`.
-
 **Endpoint:** `POST /internal_api/avatar`
 
-**Authentication:** Required
+Auto-resized to 512px width, saved as PNG.
 
-**Content-Type:** `multipart/form-data`
-
-**Form Fields:**
-- `file` - The image file to upload
-
-**Validation:**
-- File extension must be `.jpg`, `.jpeg`, or `.png`
-- Maximum file size: 5MB (configurable)
-- Image will be resized to 512px width
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Avatar updated!",
-  "data": {}
-}
-```
-
-**cURL Example:**
 ```bash
 curl -X POST http://localhost:8081/internal_api/avatar \
-  -H "Authorization: Bearer $API_KEY" \
-  -F "file=@/path/to/your/photo.jpg"
-```
-
-**Error Responses:**
-
-Missing file:
-```json
-{
-  "success": false,
-  "message": "No file provided. Use 'file' as the field name.",
-  "data": {}
-}
-```
-
-Invalid file type:
-```json
-{
-  "success": false,
-  "message": "Invalid file type. Only JPEG and PNG images are allowed.",
-  "data": {}
-}
-```
-
-Invalid image:
-```json
-{
-  "success": false,
-  "message": "Invalid file. File is not a valid JPEG or PNG image.",
-  "data": {}
-}
-```
-
-File too large:
-```json
-{
-  "success": false,
-  "message": "File too large. Maximum size is 5MB.",
-  "data": {}
-}
+  -H "Authorization: Bearer $TOKEN" \
+  -F "file=@/path/to/photo.jpg"
 ```
 
 ---
 
 ### Upload Favicon
 
-Upload a new favicon ICO file. File will be saved to `public/favicon.ico`.
-
 **Endpoint:** `POST /internal_api/favicon`
 
-**Authentication:** Required
-
-**Content-Type:** `multipart/form-data`
-
-**Form Fields:**
-- `file` - The ICO file to upload
-
-**Validation:**
-- File extension must be `.ico`
-- Maximum file size: 1MB
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Favicon updated!",
-  "data": {}
-}
-```
-
-**cURL Example:**
 ```bash
 curl -X POST http://localhost:8081/internal_api/favicon \
-  -H "Authorization: Bearer $API_KEY" \
-  -F "file=@/path/to/your/favicon.ico"
+  -H "Authorization: Bearer $TOKEN" \
+  -F "file=@/path/to/favicon.ico"
 ```
 
-**Error Responses:**
+---
 
-Missing file:
-```json
-{
-  "success": false,
-  "message": "No file provided. Use 'file' as the field name.",
-  "data": {}
-}
-```
+## API Summary
 
-Invalid file type:
-```json
-{
-  "success": false,
-  "message": "Invalid file type. Only .ico files are allowed.",
-  "data": {}
-}
-```
-
-Invalid ICO:
-```json
-{
-  "success": false,
-  "message": "Invalid file. File is not a valid ICO file.",
-  "data": {}
-}
-```
-
-File too large:
-```json
-{
-  "success": false,
-  "message": "File too large. Maximum size is 1MB.",
-  "data": {}
-}
-```
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | /auth_api/login | No | Login, returns JWT |
+| POST | /admin_api/password | JWT | Change password |
+| PUT | /admin_api/about | JWT | Update about info |
+| GET | /admin_api/banners | JWT | List all banners |
+| POST | /admin_api/banners | JWT | Create banner |
+| PUT | /admin_api/banners/:id | JWT | Update banner |
+| DELETE | /admin_api/banners/:id | JWT | Delete banner |
+| GET | /public_api/about | No | Get about info |
+| GET | /public_api/banners | No | Get active banners |
+| GET | /blog_api/posts | No | List blog metadata |
+| GET | /blog_api/posts/:title | No | Get full blog post |
+| POST | /blog_api/posts | JWT | Create blog post |
+| PUT | /blog_api/posts/:title | JWT | Update blog post |
+| DELETE | /blog_api/posts/:title | JWT | Delete blog post |
+| POST | /internal_api/cv | JWT | Upload CV PDF |
+| POST | /internal_api/avatar | JWT | Upload avatar |
+| POST | /internal_api/favicon | JWT | Upload favicon |
 
 ---
 
 ## Error Responses
 
-### Authentication Errors
-
-**401 Unauthorized - Missing Header:**
+**401 Unauthorized:**
 ```json
-{
-  "statusMessage": "Missing Authorization header",
-  "statusCode": 401
-}
+{"success": false, "error": "Missing Authorization header"}
+{"success": false, "error": "Invalid or expired token"}
 ```
-
-**401 Unauthorized - Invalid Format:**
-```json
-{
-  "statusMessage": "Invalid Authorization header format. Expected: Bearer <api-key>",
-  "statusCode": 401
-}
-```
-
-**401 Unauthorized - Invalid Key:**
-```json
-{
-  "statusMessage": "Invalid API key",
-  "statusCode": 401
-}
-```
-
-### General Errors
 
 **404 Not Found:**
 ```json
-{
-  "statusMessage": "Resource not found",
-  "statusCode": 404
-}
+{"success": false, "error": "Blog post not found: title"}
 ```
-
-**500 Internal Server Error:**
-```json
-{
-  "statusMessage": "Internal server error",
-  "statusCode": 500
-}
-```
-
----
-
-## Complete Usage Examples
-
-### Workflow: Create, Update, Read, Delete Blog Post
-
-```bash
-# Set API key
-export API_KEY="your-secret-key"
-
-# 1. Create a new post
-curl -X POST http://localhost:8081/blog_api/posts \
-  -H "Authorization: Bearer $API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "blogPost": {
-      "title": "Getting Started with D",
-      "description": "Learn D programming basics",
-      "tags": ["d-lang", "tutorial", "beginner"],
-      "content": "# Getting Started\n\nD is awesome!"
-    }
-  }'
-
-# 2. Get all posts
-curl http://localhost:8081/blog_api/posts
-
-# 3. Get specific post
-curl http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D
-
-# 4. Update the post
-curl -X PUT http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D \
-  -H "Authorization: Bearer $API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "blogPost": {
-      "content": "# Getting Started (Updated)\n\nD is really awesome!",
-      "tags": ["d-lang", "tutorial", "beginner", "updated"]
-    }
-  }'
-
-# 5. Delete the post
-curl -X DELETE http://localhost:8081/blog_api/posts/Getting%20Started%20with%20D \
-  -H "Authorization: Bearer $API_KEY"
-```
-
-### Workflow: Upload CV, Avatar, and Favicon
-```bash
-# Set API key
-export API_KEY="your-secret-key"
-
-# Upload CV
-curl -X POST http://localhost:8081/internal_api/cv \
-  -H "Authorization: Bearer $API_KEY" \
-  -F "file=@./documents/my-cv.pdf"
-
-# Upload Avatar
-curl -X POST http://localhost:8081/internal_api/avatar \
-  -H "Authorization: Bearer $API_KEY" \
-  -F "file=@./photos/profile-pic.jpg"
-
-# Upload Favicon
-curl -X POST http://localhost:8081/internal_api/favicon \
-  -H "Authorization: Bearer $API_KEY" \
-  -F "file=@./images/favicon.ico"
-```
-
-
-

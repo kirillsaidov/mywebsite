@@ -12,7 +12,8 @@ import vibe.core.log : logInfo, logError;
 import vibe.core.core : Task;
 
 import config : UploadSizeLimit, buildPublicPath;
-import api.blog : ResponseStatus, AuthInfo, authenticateRequest;
+import types : ResponseStatus, AuthInfo;
+import auth : authenticateRequest;
 import tools.image : imageConvertResize, ImageFormat, ImageSize;
 import tools.security : validateGetFile;
 

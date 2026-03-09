@@ -1,7 +1,6 @@
 module api.blog;
 
 import std.array : array, empty;
-import std.string : strip, startsWith;
 import std.datetime : SysTime, Clock, UTC;
 import std.algorithm : map;
 
@@ -10,7 +9,6 @@ import vibe.web.rest : rootPathFromName,
     method,
     before;
 import vibe.data.json : Json, serializeToJson;
-import vibe.data.serialization : optional;
 import vibe.http.server : HTTPMethod,
     HTTPServerRequest,
     HTTPServerResponse,
@@ -19,7 +17,8 @@ import vibe.http.status : HTTPStatus;
 import vibe.core.log : logInfo, logError, logWarn;
 
 import db : getMongoCollection;
-import config : getAPIKey;
+import types : ResponseStatus, AuthInfo, BlogPostRequest;
+import auth : authenticateRequest;
 
 @safe:
 
@@ -47,62 +46,6 @@ struct BlogPost
 {
     BlogMetadata metadata;
     string content; // markdown
-}
-
-// -------------------------------//
-//     IMPLEMENTATION DETAILS     //
-// -------------------------------//
-
-/// Response for operations status
-struct ResponseStatus
-{
-    bool success;
-    string message;
-    Json data = Json.emptyObject;
-}
-
-/// Request body for creating/updating blog posts
-struct BlogPostRequest
-{
-    @optional string title = "";
-    @optional string[] tags = [];
-    @optional string content = "";
-    @optional string description = "";
-}
-
-/// Authentication information passed from @before handler
-struct AuthInfo
-{
-    bool authenticated;
-}
-
-/// Validate API key from Authorization header
-AuthInfo authenticateRequest(HTTPServerRequest req, HTTPServerResponse res) @safe
-{
-    auto authHeader = "Authorization" in req.headers;
-    if (!authHeader)
-    {
-        logWarn("Missing Authorization header.");
-        throw new HTTPStatusException(HTTPStatus.unauthorized, "Missing Authorization header");
-    }
-    
-    // expected format: "Bearer your-api-key"
-    auto authValue = (*authHeader).strip();
-    
-    if (!authValue.startsWith("Bearer "))
-    {
-        logWarn("Invalid Authorization header format.");
-        throw new HTTPStatusException(HTTPStatus.unauthorized, "Invalid Authorization header format. Expected: Bearer <api-key>");
-    }
-    
-    auto providedKey = authValue[7..$].strip(); // remove "Bearer " prefix
-    if (providedKey != getAPIKey())
-    {
-        logWarn("Unauthorized API access attempt with invalid key.");
-        throw new HTTPStatusException(HTTPStatus.unauthorized, "Invalid API key");
-    }
-
-    return AuthInfo(true);
 }
 
 @rootPathFromName

@@ -5,7 +5,9 @@ services:
     ports:
       - "${BIND_PORT}:8081"
     environment:
-      - API_KEY=${API_KEY}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
       - BIND_PORT=${BIND_PORT}
       - BIND_ADDRESS=${BIND_ADDRESS}
       - MONGO_URI=${MONGO_URI}
@@ -41,5 +43,3 @@ networks:
 volumes:
   mongo-data:
   mongo-config:
-
-
